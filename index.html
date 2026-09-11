@@ -310,27 +310,10 @@
         }
 
         /* Font khusus angka (Monospaced/Digital) */
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&family=Digital+Numbers&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&family=Digital+Numbers&display=swap');
     </style>
 </head>
 <body>
-    <!-- LAYAR LOGIN -->
-    <div id="password-screen" class="fixed inset-0 bg-[#0f1115] z-[999999] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="logo mb-8 text-4xl flex items-center gap-3">
-            <i class="fa-solid fa-circle-play text-yellow-400"></i>
-            <span class="text-white font-black tracking-wider">TNC7 Visualizer</span>
-        </div>
-        <div class="bg-[#161a22] p-8 rounded-xl border border-[#2a3142] flex flex-col items-center shadow-2xl w-80">
-            <h2 class="text-gray-400 text-xs tracking-widest font-bold mb-6 uppercase">Akses Aplikasi Terkunci</h2>
-            
-            <input type="email" id="app-email" class="w-full bg-[#0f1115] border border-[#2a3142] text-white text-center text-lg rounded-lg py-3 mb-2 focus:outline-none focus:border-yellow-400 transition-all duration-200" placeholder="Email Terdaftar" autocomplete="off">
-            <input type="password" id="app-password" class="w-full bg-[#0f1115] border border-[#2a3142] text-white text-center text-lg rounded-lg py-3 mb-4 focus:outline-none focus:border-yellow-400 transition-all duration-200" placeholder="Password" autocomplete="off">
-            
-            <button id="btn-login" class="w-full bg-yellow-400 hover:bg-yellow-500 text-[#0f1115] font-bold py-3 rounded-lg transition-colors">MASUK</button>
-            <p id="password-error" class="text-red-500 text-xs mt-4 opacity-0 transition-opacity duration-300 font-medium text-center">Gagal masuk. Periksa email/password!</p>
-        </div>
-    </div>
-
     <div id="yellow-top-bar"></div>
     
     <div id="notification-modal">Pesan Notifikasi</div>
@@ -341,9 +324,6 @@
                 <i class="fa-solid fa-circle-play text-yellow-400"></i>
                 <span class="logo-text-viz">TNC7 Visualizer</span>
             </div>
-            <button id="btn-logout" class="btn-custom btn-danger text-[10px] hidden" title="Keluar dari Aplikasi">
-                <i class="fa-solid fa-power-off"></i> Keluar
-            </button>
         </div>
         
         <div class="flex items-center gap-2">
@@ -2546,142 +2526,6 @@
         
         console.log("%cBERHENTI!", "color: red; font-size: 50px; font-weight: bold; text-shadow: 2px 2px 0 #000;");
         console.log("%cIni adalah area untuk developer.", "font-size: 16px;");
-    </script>
-
-    <!-- Modul Firebase Auth & Firestore (Pelacakan Perangkat) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA1hxTceWANgQU8vwKpXDCJABvYpWQQNmk",
-            authDomain: "tnc7-visualizer.firebaseapp.com",
-            projectId: "tnc7-visualizer",
-            storageBucket: "tnc7-visualizer.firebasestorage.app",
-            messagingSenderId: "1098792876538",
-            appId: "1:1098792876538:web:28304ee128f7d156190c43"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const pwdScreen = document.getElementById('password-screen');
-        const emailInput = document.getElementById('app-email');
-        const pwdInput = document.getElementById('app-password');
-        const loginBtn = document.getElementById('btn-login');
-        const pwdError = document.getElementById('password-error');
-        const logoutBtn = document.getElementById('btn-logout');
-
-        function grantAccess() {
-            pwdScreen.style.opacity = '0';
-            setTimeout(() => { pwdScreen.style.display = 'none'; }, 500);
-            if(logoutBtn) logoutBtn.classList.remove('hidden');
-        }
-
-        function showError(msg) {
-            loginBtn.textContent = "MASUK";
-            loginBtn.disabled = false;
-            pwdError.textContent = msg;
-            pwdError.style.opacity = '1';
-            
-            pwdInput.style.transform = 'translateX(-10px)';
-            setTimeout(() => pwdInput.style.transform = 'translateX(10px)', 50);
-            setTimeout(() => pwdInput.style.transform = 'translateX(-10px)', 100);
-            setTimeout(() => pwdInput.style.transform = 'translateX(10px)', 150);
-            setTimeout(() => pwdInput.style.transform = 'translateX(0)', 200);
-            
-            setTimeout(() => { pwdError.style.opacity = '0'; }, 4000);
-        }
-
-        async function logDeviceAccess(user) {
-            try {
-                const deviceInfo = {
-                    uid: user.uid,
-                    email: user.email,
-                    waktu_login: serverTimestamp(),
-                    user_agent: navigator.userAgent,
-                    platform: navigator.platform,
-                    bahasa: navigator.language,
-                    resolusi_layar: `${window.screen.width}x${window.screen.height}`,
-                    zona_waktu: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    aplikasi: "TNC7 Visualizer"
-                };
-                
-                await addDoc(collection(db, "login_history"), deviceInfo);
-                console.log("Pelacakan login berhasil dikirim ke database.");
-            } catch (error) {
-                console.error("Gagal menyimpan data pelacakan: ", error);
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                grantAccess();
-            } else {
-                pwdScreen.style.display = 'flex';
-                void pwdScreen.offsetWidth;
-                pwdScreen.style.opacity = '1';
-                loginBtn.textContent = "MASUK";
-                loginBtn.disabled = false;
-                if(logoutBtn) logoutBtn.classList.add('hidden');
-            }
-        });
-
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                signOut(auth).catch((error) => {
-                    console.error("Error saat logout:", error);
-                });
-            });
-        }
-
-        function handleLogin() {
-            const email = emailInput.value.trim();
-            const password = pwdInput.value;
-            
-            if(!email || !password) {
-                showError("Email dan Password tidak boleh kosong!");
-                return;
-            }
-
-            loginBtn.textContent = "MEMERIKSA LISENSI...";
-            loginBtn.disabled = true;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    logDeviceAccess(user);
-                    emailInput.value = '';
-                    pwdInput.value = '';
-                })
-                .catch((error) => {
-                    console.error("Login Error:", error.code);
-                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                        showError("Akses Ditolak! Email atau Password salah.");
-                    } else if (error.code === 'auth/user-disabled') {
-                        showError("Lisensi Habis! Akun ini telah dinonaktifkan Admin.");
-                    } else {
-                        showError("Gagal masuk. Periksa jaringan internet Anda.");
-                    }
-                });
-        }
-
-        if(loginBtn) loginBtn.addEventListener('click', handleLogin);
-        
-        if(pwdInput) {
-            pwdInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-        }
-        
-        if(emailInput) {
-            emailInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') pwdInput.focus();
-            });
-            setTimeout(() => emailInput.focus(), 300);
-        }
     </script>
 </body>
 </html>
