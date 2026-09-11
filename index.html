@@ -827,6 +827,9 @@
             pinInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') checkPin();
             });
+            pinInput.addEventListener('input', () => {
+                if (pinInput.value === '0') checkPin();
+            });
             
             // Auto fokus ke input saat halaman dimuat
             pinInput.focus();
