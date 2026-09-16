@@ -163,7 +163,7 @@
             flex-direction: column;
             overflow-y: auto;
             padding: 4px;
-            padding-bottom: 80px; /* Tambahan jarak di bawah agar panel terakhir tidak terpotong */
+            padding-bottom: 80px;
             gap: 4px;
             flex-shrink: 0;
         }
@@ -295,6 +295,23 @@
             transition: all 0.2s ease;
         }
 
+        .img-playlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px;
+            border-radius: 4px;
+            background-color: var(--bg-main);
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+        }
+        .img-playlist-item:hover { background-color: var(--border-color); }
+        .img-playlist-item.active { border-color: var(--accent-yellow); background-color: rgba(245, 158, 11, 0.1); }
+        .img-playlist-thumb { width: 40px; height: 24px; object-fit: cover; border-radius: 2px; margin-right: 8px; flex-shrink: 0; background-color: #000; }
+        .img-playlist-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; font-size: 0.65rem; }
+
         #yellow-top-bar {
             position: fixed;
             top: 0;
@@ -310,8 +327,7 @@
             display: none !important;
         }
 
-        /* Font khusus angka (Monospaced/Digital) */
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&family=Digital+Numbers&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&family=Digital+Numbers&display=swap');
     
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -370,12 +386,19 @@
             
             <div class="w-px h-4 bg-gray-700 mx-1"></div>
             
+            <button class="btn-custom" onclick="document.getElementById('bgImagePlaylistInput').click()">
+                <i class="fa-solid fa-images text-xs"></i> + Playlist Gambar
+            </button>
+            <input type="file" id="bgImagePlaylistInput" accept="image/*" multiple class="hidden">
+            <button class="btn-custom" id="btnHapusImagePlaylist" title="Hapus Playlist Gambar">Hapus P.Gambar</button>
+
+            <div class="w-px h-4 bg-gray-700 mx-1"></div>
+            
             <div class="flex items-center gap-1" id="renderBitrateModeGroup">
                 <span class="text-[10px] font-bold text-gray-500 tracking-wider mr-1">BITRATE:</span>
                 <button class="btn-custom btn-active" data-val="variable" title="Variable Bitrate (Ukuran file lebih kecil, kualitas dinamis)">VBR</button>
                 <button class="btn-custom" data-val="constant" title="Constant Bitrate (Kualitas konsisten, ukuran file berpotensi lebih besar)">CBR</button>
                 
-                <!-- Target Bitrate Dropdown -->
                 <select id="renderBitrateSelect" class="custom-select w-20 ml-1" title="Target Bitrate Video">
                     <option value="1500000">1.5 Mbps</option>
                     <option value="2000000">2.0 Mbps</option>
@@ -385,7 +408,6 @@
                     <option value="5000000">5.0 Mbps</option>
                 </select>
                 
-                <!-- Pilihan Mode Render Gabung/Pisah -->
                 <select id="renderMethodSelect" class="custom-select w-20 ml-1" title="Metode Render">
                     <option value="pisah">Pisah (Per File)</option>
                     <option value="gabung">Gabung (1 Video)</option>
@@ -399,7 +421,6 @@
     <div class="workspace">
         <div class="sidebar-left">
             
-            <!-- Visualizer Panel -->
             <div class="panel">
                 <div class="panel-header flex justify-between">
                     <span>VISUALIZER</span>
@@ -905,24 +926,21 @@
                 <div id="playlistContainer" class="flex flex-col gap-1">
                 </div>
             </div>
+            
+            <div class="panel playlist-panel" id="imgPlaylistPanel" style="display: none; max-height: 250px;">
+                <div class="panel-header flex justify-between items-center">
+                    <span>PLAYLIST GAMBAR</span>
+                    <span id="imgPlaylistCount" class="text-xs font-normal">0 gbr</span>
+                </div>
+                <div id="imgPlaylistContainer" class="flex flex-col gap-1 overflow-y-auto pr-1">
+                </div>
+            </div>
         </div>
 
     </div>
 
     <!-- SCRIPT UTAMA APLIKASI -->
     <script>
-        // --- ANTI CLONE: DOMAIN LOCK (CONTOH) ---
-        // Jika Anda ingin mengunci aplikasi ini hanya di domain tertentu, 
-        // hapus komentar di bawah ini dan ubah 'domainanda.com'.
-        /*
-        const allowedDomains = ['localhost', '127.0.0.1', 'domainanda.com'];
-        if (!allowedDomains.includes(window.location.hostname) && window.location.hostname !== '') {
-            document.body.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#0f1115; color:#ef4444; font-family:sans-serif; text-align:center;"><div><h1>AKSES DITOLAK</h1><p>Aplikasi ini tidak berlisensi untuk domain ini.</p></div></div>';
-            throw new Error("Domain Lock: Eksekusi dihentikan.");
-        }
-        */
-
-        // --- LOGIKA LOCK SCREEN ---
         document.addEventListener("DOMContentLoaded", () => {
             const lockScreen = document.getElementById('lock-screen');
             const pinInput = document.getElementById('pin-input');
@@ -931,11 +949,9 @@
 
             function checkPin() {
                 if (pinInput.value === '0') {
-                    // Berhasil
                     lockScreen.style.opacity = '0';
                     setTimeout(() => { lockScreen.style.display = 'none'; }, 500);
                 } else {
-                    // Gagal
                     pinInput.classList.add('shake-anim', 'border-red-500');
                     pinError.style.opacity = '1';
                     setTimeout(() => { pinInput.classList.remove('shake-anim'); }, 300);
@@ -956,7 +972,6 @@
                 if (pinInput.value === '0') checkPin();
             });
             
-            // Auto fokus ke input saat halaman dimuat
             pinInput.focus();
         });
 
@@ -967,7 +982,8 @@
             textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', hue: 0, argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
             timeFx: { enabled: false, format: 'duration', font: "'Share Tech Mono', monospace", size: 30, color: '#ffffff', opacity: 1.0, offsetX: 0, offsetY: 0 },
             playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5 },
-            render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah' }        };
+            render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah' }
+        };
 
         let bboxes = { viz: null, overlay: null, text: null, time: null, playlist: null };
 
@@ -1000,6 +1016,10 @@
         let isRenderingPlaylist = false;
         let renderQueueIndex = 0;
         window.offlineCurrentTime = 0;
+
+        let imagePlaylist = []; 
+        let currentImageIndex = -1; 
+        let isImagePlaylistActive = false;
 
         function getRenderTime() {
             if (isOfflineRendering) return window.offlineCurrentTime;
@@ -1142,7 +1162,7 @@
             btnPosisiWaktu.addEventListener('click', () => {
                 const w = canvas.width || 1280;
                 const h = canvas.height || 720;
-                state.timeFx.offsetX = (w / 2) - 100; // Pojok kanan atas default
+                state.timeFx.offsetX = (w / 2) - 100; 
                 state.timeFx.offsetY = -(h / 2) + 50; 
                 showNotification("Geser waktu langsung di layar preview");
             });
@@ -1179,12 +1199,6 @@
         
         const playlistScaleHeightSlider = document.getElementById('playlistScaleHeightSlider');
         if(playlistScaleHeightSlider) playlistScaleHeightSlider.addEventListener('input', (e) => { state.playlistFx.scaleHeight = e.target.value / 100; });
-        
-        const playlistPosX = document.getElementById('playlistPosX');
-        if(playlistPosX) playlistPosX.addEventListener('input', (e) => { state.playlistFx.offsetX = parseInt(e.target.value); });
-        
-        const playlistPosY = document.getElementById('playlistPosY');
-        if(playlistPosY) playlistPosY.addEventListener('input', (e) => { state.playlistFx.offsetY = parseInt(e.target.value); });
         
         document.getElementById('playlistColorPicker').addEventListener('input', (e) => { state.playlistFx.color = e.target.value; });
         document.getElementById('playlistActiveColorPicker').addEventListener('input', (e) => { state.playlistFx.activeColor = e.target.value; });
@@ -1372,39 +1386,43 @@
             document.getElementById('track-name-display').textContent = file.name;
             document.getElementById('no-audio-text').style.display = 'none';
             renderPlaylist();
+
+            if (isImagePlaylistActive && imagePlaylist.length > 0) {
+                currentImageIndex = currentTrackIndex % imagePlaylist.length;
+                loadBgImageFromPlaylist(currentImageIndex);
+                renderImagePlaylistUI();
+            }
+
             if (isPlaying) audioElement.play().catch(e => console.error(e));
         }
 
         let draggedPlaylistIndex = null;
+        let draggedImgPlaylistIndex = null;
 
         function renderPlaylist() {
             const container = document.getElementById('playlistContainer');
-            const panel = document.getElementById('playlistPanel');
             const sidebarRight = document.getElementById('sidebarRight');
             document.getElementById('playlistCount').textContent = `${playlist.length} lagu`;
             sidebarRight.style.display = 'flex';
             container.innerHTML = '';
             playlist.forEach((item, index) => {
                 const el = document.createElement('div');
-                // Penambahan transisi dan border transparan untuk efek drag yang halus
                 el.className = `playlist-item border-t-2 border-transparent transition-colors ${index === currentTrackIndex ? 'active' : ''}`;
                 
-                // --- FITUR DRAG AND DROP ---
                 el.draggable = true;
                 
                 el.addEventListener('dragstart', (e) => {
                     draggedPlaylistIndex = index;
                     e.dataTransfer.effectAllowed = 'move';
-                    // Timeout digunakan agar elemen visual aslinya tidak ikut hilang saat digeser
                     setTimeout(() => el.style.opacity = '0.4', 0);
                 });
                 
                 el.addEventListener('dragover', (e) => {
-                    e.preventDefault(); // Wajib dipanggil untuk mengizinkan 'drop'
+                    e.preventDefault(); 
                     e.dataTransfer.dropEffect = 'move';
                     if (draggedPlaylistIndex !== null && draggedPlaylistIndex !== index) {
                         el.classList.remove('border-transparent');
-                        el.classList.add('border-yellow-400', 'bg-gray-800'); // Efek garis kuning penanda drop
+                        el.classList.add('border-yellow-400', 'bg-gray-800'); 
                     }
                 });
                 
@@ -1420,11 +1438,9 @@
                     
                     if (draggedPlaylistIndex === null || draggedPlaylistIndex === index) return;
                     
-                    // Modifikasi Array Playlist
                     const draggedItem = playlist.splice(draggedPlaylistIndex, 1)[0];
                     playlist.splice(index, 0, draggedItem);
                     
-                    // Penyesuaian currentTrackIndex agar lagu yang sedang diputar tetap berada pada track yang benar
                     if (currentTrackIndex === draggedPlaylistIndex) {
                         currentTrackIndex = index;
                     } else if (draggedPlaylistIndex < currentTrackIndex && index >= currentTrackIndex) {
@@ -1440,9 +1456,7 @@
                     el.style.opacity = '1';
                     draggedPlaylistIndex = null;
                 });
-                // --- AKHIR FITUR DRAG AND DROP ---
 
-                // Icon Grip penanda bisa di-drag
                 const dragIcon = document.createElement('i');
                 dragIcon.className = 'fa-solid fa-grip-vertical text-gray-600 mr-3 cursor-grab text-[10px] hover:text-gray-400';
                 
@@ -1482,6 +1496,14 @@
             document.getElementById('track-name-display').textContent = "Belum ada audio";
             document.getElementById('no-audio-text').style.display = 'block';
             isPlaying = false; updatePlayBtn(); renderPlaylist();
+            
+            if (isImagePlaylistActive) {
+                state.bg.image = null;
+                state.bg.imgElement = null;
+                currentImageIndex = -1;
+                renderImagePlaylistUI();
+            }
+
             if(ctx) { ctx.fillStyle = state.bg.color || '#0f1115'; ctx.fillRect(0,0,canvas.width,canvas.height); }
         }
 
@@ -1495,21 +1517,15 @@
         
         document.getElementById('btnHapusAudio').addEventListener('click', clearAllAudio);
 
-        // Fitur Tangkap Layar (Screenshot)
         document.getElementById('btnTangkapLayar').addEventListener('click', () => {
             if (!canvas) return;
-            
-            // Gambar ulang kanvas sekali untuk memastikan frame terbaru tertangkap (berguna jika audio sedang di-pause)
             if (!isPlaying && !isOfflineRendering) {
                 drawCanvas();
             }
-            
-            // Penamaan file mengikuti judul lagu urutan nomor 1 (index 0 di playlist)
             let filename = 'TNC7_Screenshot.png';
             if (playlist.length > 0 && playlist[0].file && playlist[0].file.name) {
                 filename = playlist[0].file.name.replace(/\.[^/.]+$/, "") + '.png';
             }
-            
             try {
                 const link = document.createElement('a');
                 link.download = filename;
@@ -1518,16 +1534,203 @@
                 showNotification("Tangkapan layar berhasil disimpan: " + filename);
             } catch (err) {
                 console.error("Gagal mengambil screenshot:", err);
-                showNotification("Gagal mengambil tangkapan layar. Coba ganti background.");
+                showNotification("Gagal mengambil tangkapan layar.");
             }
         });
 
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
+            isImagePlaylistActive = false;
+            currentImageIndex = -1;
+            renderImagePlaylistUI();
+
             const url = URL.createObjectURL(file); const img = new Image();
             img.onload = () => { state.bg.image = url; state.bg.imgElement = img; }; img.src = url;
         });
-        document.getElementById('btnHapusBg').addEventListener('click', () => { state.bg.image = null; state.bg.imgElement = null; });
+
+        document.getElementById('btnHapusBg').addEventListener('click', () => { 
+            state.bg.image = null; state.bg.imgElement = null; 
+            isImagePlaylistActive = false;
+            currentImageIndex = -1;
+            renderImagePlaylistUI();
+        });
+
+        document.getElementById('bgImagePlaylistInput').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            if (imagePlaylist.length > 0) {
+                 imagePlaylist.forEach(item => { if (item.url) URL.revokeObjectURL(item.url); });
+                 imagePlaylist = [];
+            }
+
+            files.forEach(file => {
+                const url = URL.createObjectURL(file);
+                imagePlaylist.push({ file: file, url: url });
+            });
+
+            isImagePlaylistActive = true;
+            document.getElementById('imgPlaylistPanel').style.display = 'flex';
+            
+            if (currentTrackIndex >= 0) {
+                currentImageIndex = currentTrackIndex % imagePlaylist.length;
+            } else {
+                currentImageIndex = 0;
+            }
+            
+            if (imagePlaylist.length > 0) {
+                loadBgImageFromPlaylist(currentImageIndex);
+            }
+            
+            renderImagePlaylistUI();
+            showNotification(`${files.length} gambar ditambahkan ke playlist`);
+            e.target.value = '';
+        });
+
+        document.getElementById('btnHapusImagePlaylist').addEventListener('click', () => {
+            imagePlaylist.forEach(item => { if (item.url) URL.revokeObjectURL(item.url); });
+            imagePlaylist = [];
+            isImagePlaylistActive = false;
+            currentImageIndex = -1;
+            document.getElementById('imgPlaylistPanel').style.display = 'none';
+            state.bg.image = null; 
+            state.bg.imgElement = null;
+            renderImagePlaylistUI();
+            showNotification("Playlist gambar dihapus");
+        });
+
+        function loadBgImageFromPlaylist(index) {
+            if (index < 0 || index >= imagePlaylist.length) return;
+            const item = imagePlaylist[index];
+            const img = new Image();
+            img.onload = () => { 
+                state.bg.image = item.url; 
+                state.bg.imgElement = img; 
+                if(!isPlaying && !isOfflineRendering) drawCanvas();
+            }; 
+            img.src = item.url;
+        }
+
+        function renderImagePlaylistUI() {
+            const container = document.getElementById('imgPlaylistContainer');
+            const countDisplay = document.getElementById('imgPlaylistCount');
+            const panel = document.getElementById('imgPlaylistPanel');
+            
+            if (imagePlaylist.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+            
+            panel.style.display = 'flex';
+            countDisplay.textContent = `${imagePlaylist.length} gbr`;
+            container.innerHTML = '';
+            
+            imagePlaylist.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = `img-playlist-item border-t-2 border-transparent transition-colors ${index === currentImageIndex ? 'active' : ''}`;
+                
+                el.draggable = true;
+                
+                el.addEventListener('dragstart', (e) => {
+                    draggedImgPlaylistIndex = index;
+                    e.dataTransfer.effectAllowed = 'move';
+                    setTimeout(() => el.style.opacity = '0.4', 0);
+                });
+                
+                el.addEventListener('dragover', (e) => {
+                    e.preventDefault(); 
+                    e.dataTransfer.dropEffect = 'move';
+                    if (draggedImgPlaylistIndex !== null && draggedImgPlaylistIndex !== index) {
+                        el.classList.remove('border-transparent');
+                        el.classList.add('border-yellow-400'); 
+                    }
+                });
+                
+                el.addEventListener('dragleave', () => {
+                    el.classList.add('border-transparent');
+                    el.classList.remove('border-yellow-400');
+                });
+                
+                el.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    el.classList.add('border-transparent');
+                    el.classList.remove('border-yellow-400');
+                    
+                    if (draggedImgPlaylistIndex === null || draggedImgPlaylistIndex === index) return;
+                    
+                    const draggedItem = imagePlaylist.splice(draggedImgPlaylistIndex, 1)[0];
+                    imagePlaylist.splice(index, 0, draggedItem);
+                    
+                    if (currentImageIndex === draggedImgPlaylistIndex) {
+                        currentImageIndex = index;
+                    } else if (draggedImgPlaylistIndex < currentImageIndex && index >= currentImageIndex) {
+                        currentImageIndex--;
+                    } else if (draggedImgPlaylistIndex > currentImageIndex && index <= currentImageIndex) {
+                        currentImageIndex++;
+                    }
+                    
+                    renderImagePlaylistUI();
+                    if(currentImageIndex >= 0 && currentImageIndex < imagePlaylist.length) {
+                         loadBgImageFromPlaylist(currentImageIndex);
+                    }
+                });
+                
+                el.addEventListener('dragend', () => {
+                    el.style.opacity = '1';
+                    draggedImgPlaylistIndex = null;
+                });
+
+                const dragIcon = document.createElement('i');
+                dragIcon.className = 'fa-solid fa-grip-vertical text-gray-600 mr-2 cursor-grab text-[10px] hover:text-gray-400';
+                
+                const thumb = document.createElement('img');
+                thumb.className = 'img-playlist-thumb';
+                thumb.src = item.url;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'img-playlist-name';
+                nameSpan.textContent = item.file.name;
+                nameSpan.title = item.file.name;
+                
+                el.onclick = () => { 
+                    currentImageIndex = index; 
+                    loadBgImageFromPlaylist(index); 
+                    renderImagePlaylistUI(); 
+                };
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-track-btn p-1';
+                removeBtn.innerHTML = '<i class="fa-solid fa-xmark text-[10px]"></i>';
+                removeBtn.onclick = (e) => { 
+                    e.stopPropagation(); 
+                    if(item.url) URL.revokeObjectURL(item.url);
+                    imagePlaylist.splice(index, 1);
+                    
+                    if(imagePlaylist.length === 0) {
+                        isImagePlaylistActive = false;
+                        currentImageIndex = -1;
+                        state.bg.image = null;
+                        state.bg.imgElement = null;
+                        document.getElementById('imgPlaylistPanel').style.display = 'none';
+                        if(!isPlaying && !isOfflineRendering) drawCanvas();
+                    } else {
+                        if (currentImageIndex === index) { 
+                            currentImageIndex = Math.min(index, imagePlaylist.length - 1); 
+                            loadBgImageFromPlaylist(currentImageIndex);
+                        } else if (currentImageIndex > index) { 
+                            currentImageIndex--; 
+                        }
+                    }
+                    renderImagePlaylistUI(); 
+                };
+                
+                el.appendChild(dragIcon);
+                el.appendChild(thumb);
+                el.appendChild(nameSpan); 
+                el.appendChild(removeBtn); 
+                container.appendChild(el);
+            });
+        }
 
         const playlistPanelDOM = document.getElementById('playlistPanel');
         playlistPanelDOM.addEventListener('dragover', (e) => {
@@ -1560,15 +1763,31 @@
         canvasWrapperDOM.addEventListener('drop', (e) => {
             e.preventDefault();
             canvasWrapperDOM.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (!file) return;
             
-            if (file.type.startsWith('image/')) {
-                const url = URL.createObjectURL(file); 
-                const img = new Image();
-                img.onload = () => { state.bg.image = url; state.bg.imgElement = img; }; 
-                img.src = url;
-                showNotification("Background diperbarui via Drag & Drop");
+            const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            
+            if (imageFiles.length > 0) {
+                const wasEmpty = imagePlaylist.length === 0;
+                
+                imageFiles.forEach(file => {
+                    const url = URL.createObjectURL(file);
+                    imagePlaylist.push({ file: file, url: url });
+                });
+
+                isImagePlaylistActive = true;
+                document.getElementById('imgPlaylistPanel').style.display = 'flex';
+                
+                if (wasEmpty || currentImageIndex === -1) {
+                    if (currentTrackIndex >= 0) {
+                        currentImageIndex = currentTrackIndex % imagePlaylist.length;
+                    } else {
+                        currentImageIndex = 0;
+                    }
+                    loadBgImageFromPlaylist(currentImageIndex);
+                }
+                
+                renderImagePlaylistUI();
+                showNotification(`${imageFiles.length} gambar ditambahkan ke playlist`);
             }
         });
 
@@ -1675,23 +1894,18 @@
             if (canvas) { canvas.width = 1280; canvas.height = 720; }
         }
 
-        // --- FITUR ANTI-THROTTLING (WAKE LOCK) ---
         let renderWakeLock = null;
         async function enableAntiThrottling() {
             try {
                 if ('wakeLock' in navigator) {
                     renderWakeLock = await navigator.wakeLock.request('screen');
-                    console.log("Anti-Throttling Aktif: Mengabaikan Efficiency Mode");
                 }
-            } catch (err) {
-                console.log("Wake Lock ditolak browser, menggunakan mode standar.");
-            }
+            } catch (err) {}
         }
         function disableAntiThrottling() {
             if (renderWakeLock !== null) {
                 renderWakeLock.release().then(() => {
                     renderWakeLock = null;
-                    console.log("Anti-Throttling Dimatikan");
                 });
             }
         }
@@ -1701,7 +1915,6 @@
             renderQueueIndex = 0;
             abortOfflineRender = false;
 
-            // PANGGIL ANTI-THROTTLING SAAT RENDER DIMULAI
             await enableAntiThrottling();
 
             const btn = document.getElementById('btnRekam');
@@ -1728,7 +1941,6 @@
             isRenderingPlaylist = true;
             abortOfflineRender = false;
 
-            // PANGGIL ANTI-THROTTLING SAAT RENDER DIMULAI
             await enableAntiThrottling();
 
             const btn = document.getElementById('btnRekam');
@@ -1758,9 +1970,8 @@
                 playlistIndicator.textContent = 'Menyiapkan Gabungan Video...';
                 
                 const targetSampleRate = 44100;
-                const numChannels = 2; // Paksa stereo 2-channel
+                const numChannels = 2; 
                 
-                // --- AWAL FITUR UNLIMITED SIZE (STREAM KE DISK) ---
                 let downloadName = 'TNC7_Combined_Playlist.mp4';
                 if (playlist.length > 0 && playlist[0].file) {
                     downloadName = playlist[0].file.name.replace(/\.[^/.]+$/, "") + '.mp4';
@@ -1786,21 +1997,17 @@
                         const fileHandle = await exportDirectoryHandle.getFileHandle(downloadName, { create: true });
                         writableStream = await fileHandle.createWritable();
                         streamTarget = new Mp4Muxer.FileSystemWritableFileStreamTarget(writableStream);
-                    } catch (err) {
-                        console.warn("Gagal membuat stream ke disk, fallback ke RAM", err);
-                    }
+                    } catch (err) {}
                 }
 
                 if (!streamTarget) {
                     streamTarget = new Mp4Muxer.ArrayBufferTarget();
                 }
-                // --- AKHIR FITUR UNLIMITED SIZE ---
 
                 muxer = new Mp4Muxer.Muxer({
                     target: streamTarget,
                     video: { codec: 'avc', width: 1280, height: 720, frameRate: 30 },
                     audio: { codec: 'aac', sampleRate: targetSampleRate, numberOfChannels: numChannels },
-                    // MATIKAN FASTSTART: Wajib false agar data langsung ditulis ke Harddisk (Bisa berukuran Unlimited/3GB+)
                     fastStart: false 
                 });
 
@@ -1813,11 +2020,10 @@
                             muxer.addVideoChunk(chunk, meta); 
                             hasVideoChunks = true;
                         } catch (e) { 
-                            console.error("Muxer Video Error:", e); 
                             abortOfflineRender = true; 
                         } 
                     },
-                    error: (e) => { console.error("VideoEncoder Error:", e); abortOfflineRender = true; }
+                    error: (e) => { abortOfflineRender = true; }
                 });
 
                 videoEncoder.configure({
@@ -1829,10 +2035,10 @@
                     output: (chunk, meta) => { 
                         if (abortOfflineRender) return;
                         try { muxer.addAudioChunk(chunk, meta); } catch(e) { 
-                            console.error("Muxer Audio Error:", e); abortOfflineRender = true; 
+                            abortOfflineRender = true; 
                         } 
                     },
-                    error: (e) => { console.error("AudioEncoder Error:", e); abortOfflineRender = true; }
+                    error: (e) => { abortOfflineRender = true; }
                 });
 
                 audioEncoder.configure({
@@ -1847,7 +2053,6 @@
                 }
                 ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
-                // SISTEM ABSOLUTE COUNTER: Solusi pasti cegah error timestamp antar transisi lagu
                 let totalVideoFramesEncoded = 0;
                 let totalAudioSamplesEncoded = 0;
 
@@ -1860,6 +2065,12 @@
                     lastTrackForText = "";
                     renderPlaylist();
                     
+                    if (isImagePlaylistActive && imagePlaylist.length > 0) {
+                        currentImageIndex = currentTrackIndex % imagePlaylist.length;
+                        loadBgImageFromPlaylist(currentImageIndex);
+                        renderImagePlaylistUI();
+                    }
+
                     const file = playlist[trackIndex].file;
                     document.getElementById('player-title').textContent = file.name;
                     document.getElementById('track-name-display').textContent = file.name;
@@ -1897,7 +2108,6 @@
                             audioEncoder.encode(audioData); 
                             audioData.close();
                         } catch(e) {
-                            console.error("AudioData Error:", e);
                             abortOfflineRender = true;
                         }
                         
@@ -1958,14 +2168,11 @@
                         if (videoEncoder.state === 'configured') {
                             let videoTimestamp = Math.round((totalVideoFramesEncoded / fps) * 1e6);
                             const vframe = new VideoFrame(canvas, { timestamp: videoTimestamp });
-                            
-                            // Paksa keyframe di frame pertama tiap lagu ATAU tiap kelipatan FPS (Mencegah encoder error)
                             let isKeyFrame = (frameIdx === 0) || (totalVideoFramesEncoded % fps === 0);
                             
                             try { 
                                 videoEncoder.encode(vframe, { keyFrame: isKeyFrame }); 
                             } catch (e) {
-                                console.error("VideoFrame Error:", e);
                                 abortOfflineRender = true;
                             }
                             vframe.close();
@@ -2004,7 +2211,7 @@
                 }
 
                 if (abortOfflineRender) throw new Error("Render dibatalkan pengguna");
-                if (!hasVideoChunks) throw new Error("Gagal mengenkode video. Terjadi kesalahan pada proses frame.");
+                if (!hasVideoChunks) throw new Error("Gagal mengenkode video.");
 
                 statusIndicator.textContent = 'FINISHING...';
                 playlistIndicator.textContent = 'Menyimpan Video Gabungan...';
@@ -2016,17 +2223,14 @@
                 if (audioEncoder.state !== 'closed') audioEncoder.close();
                 try { muxer.finalize(); } catch (finalizeErr) {}
                 
-                // Tutup stream secara manual jika didukung untuk memastikan file tidak terkunci
                 if (writableStream) {
                     try { await writableStream.close(); } catch(e){}
                 }
                 
                 if (streamTarget instanceof Mp4Muxer.FileSystemWritableFileStreamTarget) {
-                    // Data sudah otomatis tersimpan ke Harddisk secara streaming tanpa membebani RAM
                     statusIndicator.textContent = `Tersimpan: ${downloadName}`;
                     await new Promise(r => setTimeout(r, 800));
                 } else {
-                    // Fallback Mode RAM (jika pengguna membatalkan pilih folder)
                     const blob = new Blob([muxer.target.buffer], { type: 'video/mp4' });
                     if (blob && blob.size > 1024) {
                         const url = URL.createObjectURL(blob);
@@ -2043,7 +2247,6 @@
                 showNotification("Video gabungan berhasil dirender!");
 
             } catch (err) {
-                console.error(err);
                 if (err.message !== "Render dibatalkan pengguna") {
                     statusIndicator.textContent = 'GAGAL RENDER';
                     playlistIndicator.textContent = `Error: ${err.message}`;
@@ -2067,17 +2270,13 @@
             isRecording = true;
             abortOfflineRender = false;
 
-            // Simpan kanvas asli untuk UI
             let originalCanvas = canvas;
             let originalCtx = ctx;
 
-            // Mematikan/menggelapkan visual di kanvas utama (DOM) 
-            // agar beban GPU/Compositor UI browser jauh lebih ringan saat render
             originalCtx.fillStyle = '#050505';
             originalCtx.fillRect(0, 0, originalCanvas.width, originalCanvas.height);
-            originalCanvas.style.display = 'none'; // Sembunyikan elemen fisik dari layout DOM
+            originalCanvas.style.display = 'none';
 
-            // MATIKAN ANIMASI CSS: Hentikan putaran dan kedipan loading agar tidak menyita GPU
             document.querySelectorAll('#recording-indicator .animate-spin, #recording-indicator .animate-ping, #recording-indicator .animate-pulse').forEach(el => {
                 el.style.animation = 'none';
             });
@@ -2091,6 +2290,13 @@
             lastTrackForText = ""; 
             
             renderPlaylist();
+
+            if (isImagePlaylistActive && imagePlaylist.length > 0) {
+                currentImageIndex = currentTrackIndex % imagePlaylist.length;
+                loadBgImageFromPlaylist(currentImageIndex);
+                renderImagePlaylistUI();
+            }
+
             document.getElementById('player-title').textContent = playlist[trackIndex].file.name;
             document.getElementById('track-name-display').textContent = playlist[trackIndex].file.name;
             
@@ -2100,7 +2306,6 @@
 
                 indicator.textContent = 'DEKODE AUDIO...';
                 
-                // Gunakan sample rate statis (44.1kHz) untuk kompatibilitas encoder maksimal
                 const targetSampleRate = 44100;
                 const decodeCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: targetSampleRate });
                 const originalAudioBuffer = await decodeCtx.decodeAudioData(arrayBuffer);
@@ -2123,12 +2328,10 @@
                         catch (chunkErr) {}
                     },
                     error: (e) => { 
-                        console.error("VideoEncoder Error:", e.message);
                         abortOfflineRender = true;
                     }
                 });
                 
-                // Menggunakan profil Baseline (42E01F) untuk stabilitas 100% dan fallback otomatis ke software
                 videoEncoder.configure({
                     codec: 'avc1.42E01F', 
                     width: 1280, 
@@ -2143,7 +2346,6 @@
                         try { muxer.addAudioChunk(chunk, meta); } catch(e) {}
                     },
                     error: (e) => { 
-                        console.error("AudioEncoder Error:", e); 
                         abortOfflineRender = true; 
                     }
                 });
@@ -2180,7 +2382,7 @@
                             });
                             enc.encode(audioData); 
                             audioData.close();
-                        } catch(e) { console.error("Format audio chunk error:", e); }
+                        } catch(e) {}
                         
                         while (enc.state === 'configured' && enc.encodeQueueSize >= 50) { 
                             await new Promise(r => setTimeout(r, 2)); 
@@ -2238,7 +2440,6 @@
                         state.overlay.element.currentTime = window.offlineCurrentTime % state.overlay.element.duration;
                     }
 
-                    // UPDATE UI DIKURANGI: Update indikator teks setiap 30 frame (1 detik sekali) bukan 15
                     if (frameIdx % 30 === 0) {
                         const progress = Math.min(100, Math.round((currentTime / duration) * 100));
                         indicator.textContent = `RENDER VIDEO... ${progress}%`;
@@ -2265,7 +2466,6 @@
                     let nextTime = frameIdx * interval;
                     
                     if (nextTime < duration && !abortOfflineRender) {
-                        // FIX: Memastikan waktu suspend selalu valid di masa depan agar tidak hang
                         let safeSuspendTime = nextTime;
                         const minAdvance = 128 / targetSampleRate;
                         if (safeSuspendTime <= offlineCtx.currentTime + minAdvance) {
@@ -2274,12 +2474,10 @@
                         
                         try {
                             offlineCtx.suspend(safeSuspendTime).then(handleSuspend).catch(e => {
-                                console.warn("Siklus frame diskip:", e);
                                 processFrameResolve();
                             });
                             offlineCtx.resume();
                         } catch(e) {
-                            console.warn("Gagal melanjutkan loop:", e);
                             processFrameResolve();
                         }
                     } else {
@@ -2289,14 +2487,12 @@
 
                 try {
                     offlineCtx.suspend(0).then(handleSuspend).catch(e => {
-                        console.error("Gagal memulai suspend:", e);
                         processFrameResolve();
                     });
                     
                     offlineCtx.startRendering().then(() => {
                         processFrameResolve();
                     }).catch(err => {
-                        console.error("AudioRendering Error:", err);
                         processFrameResolve();
                     });
                 } catch(e) {
@@ -2361,7 +2557,6 @@
                 forceGarbageCollection();
 
             } catch (err) {
-                console.error(err);
                 if (err.message !== "Render dibatalkan pengguna") {
                     indicator.textContent = 'GAGAL RENDER';
                     playlistIndicator.textContent = `Error: ${err.message}`;
@@ -2385,7 +2580,6 @@
             isRenderingPlaylist = false;
             abortOfflineRender = false;
             
-            // MATIKAN ANTI-THROTTLING SAAT RENDER SELESAI/BATAL
             disableAntiThrottling();
             
             const btn = document.getElementById('btnRekam');
@@ -2394,12 +2588,10 @@
             btn.classList.remove('bg-red-600', 'text-white', 'border-red-500');
             document.getElementById('recording-indicator').classList.add('hidden');
             
-            // Nyalakan kembali animasi CSS Loading
             document.querySelectorAll('#recording-indicator [style*="animation: none"]').forEach(el => {
                 el.style.animation = '';
             });
 
-            // Restore canvas visibility
             if (canvas && canvas.style) canvas.style.display = 'block';
             
             if (videoEncoder && videoEncoder.state !== 'closed') videoEncoder.close();
@@ -2477,12 +2669,9 @@
                 let bgAvg = bgSum * 0.0002614379; 
                 bgAudioReactivity = Math.pow(bgAvg, 1.2);
 
-                // Algoritma Jedag Jedug - Fokus pada frekuensi kick bass (0-2)
                 let kickBassAvg = (dataArray[0] + dataArray[1] + dataArray[2]) / (3 * 255); 
-                // Pangkat diubah ke 3.0 agar pembacaan rentang kick lebih akurat tanpa menangkap frekuensi vokal
                 let rawKick = Math.pow(kickBassAvg, 3.0) * 1.5; 
                 
-                // Smoothing disesuaikan ke 0.5 agar denyutan memiliki 'bounce' / pegas yang mulus kembali ke awal (tidak kaku)
                 smoothedKick = Math.max(rawKick, smoothedKick * 0.5);
                 kickBassReactivity = smoothedKick;
             } else {
@@ -2507,11 +2696,7 @@
                 let filterBG = 'none'; let flashAlpha = 0;
 
                 if (state.bg.effect === 'denyut') {
-                    // Skala dasar sesuai gambar awal (state.bg.scale)
-                    // Ambang batas (threshold) diturunkan agar lebih mudah menangkap kick
                     let zoomBoost = Math.max(0, kickBassReactivity - 0.15); 
-                    
-                    // Pengali intensitas dinaikkan drastis ke 0.15 agar gerakan denyut gambar mendominasi saat kick
                     scaleBG = state.bg.scale + (zoomBoost * state.bg.pulseIntensity * 0.15); 
                 } else if (state.bg.effect === 'zoom') {
                     scaleBG = state.bg.scale * (1 + (Math.sin(timeBG * 0.1) * 0.15 * state.bg.pulseIntensity)); 
@@ -2554,7 +2739,6 @@
 
             ctx.imageSmoothingEnabled = false;
             let weatherSpeedMult = state.bg.weatherSpeed / 50;
-
             weatherSpeedMult *= 2;
 
             if (state.bg.weather.includes('salju')) {
@@ -3101,7 +3285,6 @@
                 ctx.restore();
             }
             
-            // --- DRAW TIME OVERLAY ---
             if (state.timeFx.enabled) {
                 ctx.save();
                 
@@ -3168,20 +3351,17 @@
                 ctx.textAlign = state.playlistFx.align || 'left'; 
                 ctx.textBaseline = 'top';
                 
-                // Peningkatan shadow agar teks lebih terbaca (seperti gambar)
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 ctx.shadowBlur = 8;
                 ctx.shadowOffsetX = 3;
                 ctx.shadowOffsetY = 3;
                 
-                // Jarak Kanan-Kiri (Spasi Huruf)
                 if (state.playlistFx.letterSpacing !== undefined && state.playlistFx.letterSpacing > 0) {
                     ctx.letterSpacing = state.playlistFx.letterSpacing + "px";
                 } else {
                     ctx.letterSpacing = "0px";
                 }
 
-                // Default ke pojok kiri atas
                 let startX = 40 + (state.playlistFx.offsetX || 0); 
                 let startY = 40 + (state.playlistFx.offsetY || 0);
                 
@@ -3200,19 +3380,16 @@
                 let animRot = 0;
 
                 if (state.playlistFx.effect === 'denyut') {
-                    // Gunakan kickBassReactivity yang sudah dihitung sebelumnya untuk efek denyut yang responsif
                     let zoomBoost = Math.max(0, kickBassReactivity - 0.15); 
                     animScale = 1 + (zoomBoost * intensity * 0.3); 
                 } else if (state.playlistFx.effect === 'zoom') {
                     animScale = 1 + (Math.sin(timePL * 2.0) * 0.1 * intensity); 
                 } else if (state.playlistFx.effect === 'ayun') {
-                    // Pergerakan ayunan dibuat lebih dinamis
                     animX = Math.sin(timePL * 1.5) * (30 * intensity);
                     animY = Math.cos(timePL * 1.2) * (20 * intensity);
                     animRot = Math.sin(timePL * 1.0) * (0.05 * intensity);
                 }
 
-                // Membulatkan koordinat translasi untuk menghindari rendering sub-pixel yang membuat teks buram/rusak
                 let finalTransX = Math.round(startX + animX);
                 let finalTransY = Math.round(startY + animY);
 
@@ -3221,7 +3398,6 @@
                 ctx.scale(scaleW * animScale, scaleH * animScale);
 
                 for (let i = 0; i < playlist.length; i++) {
-                    // Membersihkan ekstensi file (.mp3, .mp4) agar tampil rapi sebagai judul lagu
                     let trackName = playlist[i].file.name.replace(/\.[^/.]+$/, "");
                     
                     if (state.playlistFx.transform === 'uppercase') {
@@ -3233,38 +3409,31 @@
 
                     let itemAlpha = 1.0;
 
-                    // Highlight track yang sedang dimainkan
                     if (i === currentTrackIndex) {
-                        ctx.fillStyle = state.playlistFx.activeColor; // Default: Kuning
+                        ctx.fillStyle = state.playlistFx.activeColor; 
                         
-                        // Efek Kedip disamakan dengan anim Blink dari TEXT OVERLAY
                         if (state.playlistFx.blinkIntensity > 0) {
                             let time = getRenderTime();
                             let speedMult = state.playlistFx.blinkIntensity / 50; 
                             
-                            // Animasi Blink + Sinkronisasi Bass (Audio Reactivity)
                             itemAlpha = (Math.sin(time * 5 * speedMult) * 0.4) + 0.6;
                             if (audioReactivity > 0.3) {
                                 itemAlpha = (Math.sin(time * 15 * speedMult) * 0.5) + 0.5;
                             }
                         }
                     } else {
-                        ctx.fillStyle = state.playlistFx.color;       // Default: Putih
+                        ctx.fillStyle = state.playlistFx.color;       
                     }
 
-                    // Terapkan transparansi hanya pada lagu yang di-loop saat ini
                     ctx.globalAlpha = itemAlpha;
 
-                    // Render Teks (dengan efek shadow untuk stroke/outline tipis)
                     ctx.fillText(displayText, 0, i * lineHeight);
                     
-                    // Render ulang tanpa blur agar teks utama tetap tajam
                     ctx.shadowBlur = 0;
                     ctx.shadowOffsetX = 0;
                     ctx.shadowOffsetY = 0;
                     ctx.fillText(displayText, 0, i * lineHeight);
                     
-                    // Kembalikan shadow untuk iterasi berikutnya
                     ctx.shadowBlur = 8;
                     ctx.shadowOffsetX = 3;
                     ctx.shadowOffsetY = 3;
@@ -3273,7 +3442,6 @@
                     if (metrics.width > maxWidth) maxWidth = metrics.width;
                 }
                 
-                // Kembalikan global alpha normal untuk mencegah elemen lain ikut transparan
                 ctx.globalAlpha = 1.0;
 
                 let pAlign = state.playlistFx.align || 'left';
@@ -3290,22 +3458,18 @@
 
         let draggingElement = null; let dragStartX = 0; let dragStartY = 0; let initialOffsetX = 0; let initialOffsetY = 0;
 
-        // --- FITUR UNDO (CTRL+Z) ---
         const undoStack = [];
-        const MAX_UNDO = 20; // Maksimal 20 langkah ke belakang agar memory tetap ringan
+        const MAX_UNDO = 20;
 
         function saveStateSnapshot() {
             if (isRecording || isOfflineRendering) return;
-            // Rekam state saat ini, abaikan elemen DOM berukuran besar agar tidak lag
             const snapshot = JSON.stringify(state, (k, v) => (k === 'element' || k === 'imgElement' ? undefined : v));
-            // Hindari duplikasi jika tidak ada perubahan
             if (undoStack.length > 0 && undoStack[undoStack.length - 1] === snapshot) return;
             undoStack.push(snapshot);
             if (undoStack.length > MAX_UNDO) undoStack.shift();
         }
 
         function updateUIFromState() {
-            // Fungsi helper untuk mengupdate UI secara efisien
             const setVal = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined) el.value = val; };
             const setCheck = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined) el.checked = val; };
             const setBtn = (groupId, val) => { 
@@ -3318,7 +3482,6 @@
                 }
             };
 
-            // Update Panel Visualizer
             setCheck('vizEnable', state.viz.enabled);
             setBtn('vizAlignGroup', state.viz.align);
             setVal('vizSizeSlider', state.viz.size * 100);
@@ -3329,7 +3492,6 @@
             setVal('vizHueSlider', state.viz.hue);
             setVal('vizTypeSelect', state.viz.type);
 
-            // Update Panel Cuaca & Background
             const wg = document.getElementById('bgWeatherGroup');
             if(wg && state.bg.weather) {
                 wg.querySelectorAll('button').forEach(b => {
@@ -3345,14 +3507,12 @@
             setVal('bgPulseIntensitySlider', state.bg.pulseIntensity * 100);
             setVal('bgScaleSlider', state.bg.scale * 100);
 
-            // Update Panel Overlay
             setVal('overlaySize', state.overlay.size * 100);
             setVal('overlayOpacity', state.overlay.opacity * 100);
             setVal('overlaySpeed', state.overlay.speed * 100);
             setBtn('overlayBlendGroup', state.overlay.blend);
             setBtn('overlayAnimGroup', state.overlay.anim);
 
-            // Update Panel Text
             setCheck('textEnable', state.textFx.enabled);
             setVal('textCustomInput', state.textFx.customText);
             setVal('textFontSelect', state.textFx.font);
@@ -3367,7 +3527,6 @@
             setBtn('textAnimGroup', state.textFx.anim);
             setVal('textAnimSpeedSlider', state.textFx.animSpeed);
 
-            // Update Panel Waktu
             setCheck('timeEnable', state.timeFx.enabled);
             setBtn('timeFormatGroup', state.timeFx.format);
             setVal('timeFontSelect', state.timeFx.font);
@@ -3375,7 +3534,6 @@
             setVal('timeSizeSlider', state.timeFx.size);
             setVal('timeOpacitySlider', state.timeFx.opacity * 100);
 
-            // Update Panel Playlist
             setCheck('playlistFxEnable', state.playlistFx.enabled);
             setVal('playlistFontSelect', state.playlistFx.font);
             setVal('playlistSizeSlider', state.playlistFx.size);
@@ -3398,13 +3556,11 @@
             setBtn('renderBitrateModeGroup', state.render.bitrateMode);
             setVal('renderBitrateSelect', state.render.targetBitrate);
 
-            // Sinkronisasi ulang teks angka pada slider UI
             document.querySelectorAll('input[type=range]').forEach(slider => {
                 const span = slider.parentElement.querySelector('.val-indicator');
                 if (span) span.textContent = slider.value;
             });
             
-            // Handle visibilitas blok warna Auto/Statis
             if (state.textFx.colorMode === 'auto') {
                 document.getElementById('textStaticColorGroup').style.display = 'none';
                 document.getElementById('textHueColorGroup').style.display = 'none';
@@ -3432,7 +3588,6 @@
                 return;
             }
             const prevState = JSON.parse(undoStack.pop());
-            // Kembalikan value primitif ke state utama
             Object.keys(prevState).forEach(category => {
                 if(state[category]) {
                     Object.keys(prevState[category]).forEach(key => {
@@ -3444,7 +3599,6 @@
             showNotification("Undo: Kembali ke pengaturan sebelumnya");
         }
 
-        // Event listener untuk merekam histori setiap kali panel di-klik atau input teks aktif
         const leftSidebarEl = document.querySelector('.sidebar-left');
         if (leftSidebarEl) {
             leftSidebarEl.addEventListener('mousedown', (e) => {
@@ -3454,7 +3608,6 @@
                 if(e.target.tagName === 'INPUT' && !e.ctrlKey) saveStateSnapshot();
             });
         }
-        // --- AKHIR FITUR UNDO ---
 
         function getCanvasMousePos(evt) {
             const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;
@@ -3487,7 +3640,7 @@
             }
 
             if (clicked) {
-                saveStateSnapshot(); // Rekam histori sebelum mulai di-drag/digeser
+                saveStateSnapshot(); 
                 draggingElement = clicked; dragStartX = pos.x; dragStartY = pos.y;
                 if (clicked === 'viz') { initialOffsetX = state.viz.offsetX || 0; initialOffsetY = state.viz.offsetY || 0; } 
                 else if (clicked === 'overlay') { initialOffsetX = state.overlay.offsetX || 0; initialOffsetY = state.overlay.offsetY || 0; } 
@@ -3519,25 +3672,19 @@
 
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.addEventListener('keydown', function(e) {
-            // Mencegah shortcut browser standar
             if(e.keyCode === 123) { e.preventDefault(); return false; }
             if(e.ctrlKey && e.shiftKey && e.keyCode === 73) { e.preventDefault(); return false; }
             if(e.ctrlKey && e.shiftKey && e.keyCode === 74) { e.preventDefault(); return false; }
             if(e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; }
 
-            // Deteksi apakah user sedang fokus mengetik di dalam kolom input
             const tag = e.target.tagName;
             const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
 
-            // FITUR 1: SPASI (Play / Pause Audio)
-            // Syarat: User tidak boleh sedang mengetik di kolom input teks
             if (e.code === 'Space' && !isInput) {
-                e.preventDefault(); // Mencegah layar scroll ke bawah
+                e.preventDefault();
                 playAudio();
             }
 
-            // FITUR 2: CTRL + Z (Undo Pengaturan Panel / Pergeseran Kanvas)
-            // Syarat: User tidak boleh sedang mengetik di kolom input (karena input punya native undo text sendiri)
             if (e.ctrlKey && e.code === 'KeyZ') {
                 if (!isInput) {
                     e.preventDefault();
@@ -3545,9 +3692,6 @@
                 }
             }
         });
-        
-        console.log("%cBERHENTI!", "color: red; font-size: 50px; font-weight: bold; text-shadow: 2px 2px 0 #000;");
-        console.log("%cIni adalah area untuk developer.", "font-size: 16px;");
     </script>
 </body>
 </html>
