@@ -862,14 +862,60 @@
                     </div>
                 </div>
 
+                <div class="flex items-start gap-1 mt-1">
+                    <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">M.Kedip</span>
+                    <div class="flex flex-wrap gap-1 flex-1" id="playlistBlinkModeGroup">
+                        <button class="btn-custom btn-active" data-val="normal">Normal</button>
+                        <button class="btn-custom" data-val="fade">Lembut</button>
+                        <button class="btn-custom" data-val="hard">Patah</button>
+                        <button class="btn-custom" data-val="typewriter">Ketik</button>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <span class="control-label text-[9px] w-10">Ikon</span>
+                    <div class="flex-1 flex gap-1">
+                        <select class="custom-select flex-1" id="playlistIconSelect">
+                            <option value="none">Tanpa Ikon</option>
+                            <option value="play_solid">▶ Solid Play</option>
+                            <option value="play_outline">▷ Outline Play</option>
+                            <option value="music">♫ Nada Musik</option>
+                            <option value="wave">ılılı Gelombang</option>
+                            <option value="arrow">➔ Panah</option>
+                            <option value="dot">● Titik Modern</option>
+                        </select>
+                        <input type="color" id="playlistIconColorPicker" value="#ef4444" class="w-6 h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Warna Ikon">
+                    </div>
+                </div>
+
                 <div class="flex items-center text-[9px] justify-between w-full mt-1">
                     <div class="flex items-center gap-1 w-full pr-1">
-                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase" title="Intensitas kedipan lagu yang sedang diputar">Kedip</span>
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase" title="Kecepatan kedipan lagu yang sedang diputar">Level</span>
                         <input type="range" id="playlistBlinkSlider" min="0" max="100" value="50" class="flex-1">
                     </div>
                 </div>
 
-                <div class="flex items-center gap-1 mt-1">
+                <!-- Bagian Kontrol Masking Background Playlist -->
+                <div class="flex items-center gap-1 mt-1 border-t border-[#2a3142] pt-1">
+                    <label class="flex items-center gap-1 cursor-pointer w-14 text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+                        <input type="checkbox" id="playlistMaskEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
+                        Mask
+                    </label>
+                    <select class="custom-select flex-1" id="playlistMaskDirectionSelect">
+                        <option value="left_right">Kiri &rarr; Kanan</option>
+                        <option value="right_left">Kanan &rarr; Kiri</option>
+                        <option value="top_bottom">Atas &darr; Bawah</option>
+                        <option value="solid">Blok Solid</option>
+                    </select>
+                </div>
+                <div class="flex items-center text-[9px] justify-between w-full mt-1">
+                    <div class="flex items-center gap-1 w-full pr-1">
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Opc</span>
+                        <input type="range" id="playlistMaskOpacitySlider" min="0" max="100" value="70" class="flex-1">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1 mt-1 border-t border-[#2a3142] pt-1">
                     <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Presisi</span>
                     <div class="flex-1">
                         <button class="btn-custom w-full text-[9px]" id="btnPosisiPlaylist" title="Klik dan geser list langsung di preview">⏺ Geser Langsung di Layar</button>
@@ -981,7 +1027,7 @@
             overlay: { element: null, type: null, lapisan: 'depan', blend: 'normal', size: 0.5, opacity: 1, speed: 0.5, anim: 'none', offsetX: 0, offsetY: 0, animTime: 0, lastDrawTime: 0 },
             textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', hue: 0, argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
             timeFx: { enabled: false, format: 'duration', font: "'Share Tech Mono', monospace", size: 30, color: '#ffffff', opacity: 1.0, offsetX: 0, offsetY: 0 },
-            playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5 },
+            playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, blinkMode: 'normal', scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5, icon: 'none', iconColor: '#ef4444', maskEnabled: false, maskDirection: 'left_right', maskOpacity: 0.7 },
             render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah' }
         };
 
@@ -1102,6 +1148,7 @@
         bindButtonGroup('timeFormatGroup', 'timeFx', 'format');
         bindButtonGroup('playlistAlignGroup', 'playlistFx', 'align');
         bindButtonGroup('playlistEffectGroup', 'playlistFx', 'effect');
+        bindButtonGroup('playlistBlinkModeGroup', 'playlistFx', 'blinkMode');
 
         const textColorModeGroup = document.getElementById('textColorModeGroup');
         const textStaticColorGroup = document.getElementById('textStaticColorGroup');
@@ -1203,6 +1250,33 @@
         document.getElementById('playlistColorPicker').addEventListener('input', (e) => { state.playlistFx.color = e.target.value; });
         document.getElementById('playlistActiveColorPicker').addEventListener('input', (e) => { state.playlistFx.activeColor = e.target.value; });
         document.getElementById('playlistBlinkSlider').addEventListener('input', (e) => { state.playlistFx.blinkIntensity = parseInt(e.target.value); });
+        
+        const playlistIconSelect = document.getElementById('playlistIconSelect');
+        if (playlistIconSelect) {
+            playlistIconSelect.addEventListener('change', (e) => { state.playlistFx.icon = e.target.value; });
+        }
+        
+        const playlistIconColorPicker = document.getElementById('playlistIconColorPicker');
+        if (playlistIconColorPicker) {
+            playlistIconColorPicker.addEventListener('input', (e) => { state.playlistFx.iconColor = e.target.value; });
+        }
+
+        // Event listener Masking Playlist
+        document.getElementById('playlistMaskEnable').addEventListener('change', (e) => { 
+            state.playlistFx.maskEnabled = e.target.checked; 
+            // UX Auto-fix: Jika dinyalakan tapi opacity 0, otomatis set ke 70 agar langsung terlihat
+            if (e.target.checked && (state.playlistFx.maskOpacity === 0 || state.playlistFx.maskOpacity === "0")) {
+                state.playlistFx.maskOpacity = 0.7;
+                const slider = document.getElementById('playlistMaskOpacitySlider');
+                if(slider) {
+                    slider.value = 70;
+                    const span = slider.parentElement.querySelector('.val-indicator');
+                    if(span) span.textContent = '70';
+                }
+            }
+        });
+        document.getElementById('playlistMaskDirectionSelect').addEventListener('change', (e) => { state.playlistFx.maskDirection = e.target.value; });
+        document.getElementById('playlistMaskOpacitySlider').addEventListener('input', (e) => { state.playlistFx.maskOpacity = e.target.value / 100; });
         
         const btnPosisiPlaylist = document.getElementById('btnPosisiPlaylist');
         if(btnPosisiPlaylist) {
@@ -2874,6 +2948,10 @@
                 }
             }
 
+            // MENGAKTIFKAN KEMBALI ANTI-ALIASING UNTUK TEKS AGAR TIDAK SEPERTI CACING
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
             const drawOverlayObj = () => {
                 if (!state.overlay.element) return;
                 
@@ -3340,40 +3418,183 @@
 
             if (state.playlistFx.enabled && playlist.length > 0) {
                 ctx.save();
-                let fontSize = state.playlistFx.size;
                 
+                // Pastikan penghalus gambar aktif
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
+                let fontSize = state.playlistFx.size;
                 let fontStyle = '';
                 if (state.playlistFx.italic) fontStyle += 'italic ';
                 if (state.playlistFx.bold) fontStyle += 'bold ';
                 
-                ctx.font = `${fontStyle}${fontSize}px ${state.playlistFx.font}, sans-serif`;
+                // OVERSAMPLING & RASTERIZATION BUFFER (SUPER RESOLUTION)
+                // Diperkuat menjadi 3x lipat dan ditambahkan pelembut tepi (anti-jitter)
+                const OVERSAMPLE = 3.0; 
+                let scaledFontSize = Math.floor(fontSize * OVERSAMPLE);
                 
-                ctx.textAlign = state.playlistFx.align || 'left'; 
-                ctx.textBaseline = 'top';
+                if (!window._plBuffer) {
+                    window._plBuffer = document.createElement('canvas');
+                    window._plCtx = window._plBuffer.getContext('2d', { alpha: true });
+                }
+                let bCtx = window._plCtx;
+                let bCanv = window._plBuffer;
                 
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 3;
-                ctx.shadowOffsetY = 3;
-                
+                let fontStr = `${fontStyle}${scaledFontSize}px ${state.playlistFx.font}, sans-serif`;
+                let ls = "0px";
                 if (state.playlistFx.letterSpacing !== undefined && state.playlistFx.letterSpacing > 0) {
-                    ctx.letterSpacing = state.playlistFx.letterSpacing + "px";
-                } else {
-                    ctx.letterSpacing = "0px";
+                    ls = (state.playlistFx.letterSpacing * OVERSAMPLE) + "px";
                 }
 
+                let lineHeight = scaledFontSize * (state.playlistFx.spacing || 1.5);
+                let totalHeight = playlist.length * lineHeight;
+                let outlineWidth = Math.max(4, scaledFontSize * 0.18); // Garis tepi solid lebih proporsional
+                
+                // 1. Hitung Dimensi Teks
+                bCtx.font = fontStr;
+                if (bCtx.letterSpacing !== undefined) bCtx.letterSpacing = ls;
+                
+                let maxTextWidth = 0;
+                let baseTexts = [];
+                
+                let pIconStr = "";
+                if (state.playlistFx.icon === 'play_solid') pIconStr = "▶";
+                else if (state.playlistFx.icon === 'play_outline') pIconStr = "▷";
+                else if (state.playlistFx.icon === 'music') pIconStr = "♫";
+                else if (state.playlistFx.icon === 'wave') pIconStr = "ılılı";
+                else if (state.playlistFx.icon === 'arrow') pIconStr = "➔";
+                else if (state.playlistFx.icon === 'dot') pIconStr = "●";
+
+                for (let i = 0; i < playlist.length; i++) {
+                    let trackName = playlist[i].file.name.replace(/\.[^/.]+$/, "");
+                    if (state.playlistFx.transform === 'uppercase') trackName = trackName.toUpperCase();
+                    let numStr = (i + 1).toString().padStart(2, '0');
+                    let baseTxt = `${numStr}. ${trackName}`;
+                    
+                    let fullTxt = baseTxt;
+                    if (i === currentTrackIndex && pIconStr !== "") {
+                        fullTxt = `${pIconStr} ${baseTxt}`; // Icon diletakkan sebelum nomor
+                    }
+                    
+                    baseTexts.push(baseTxt);
+                    let metrics = bCtx.measureText(fullTxt);
+                    if (metrics.width > maxTextWidth) maxTextWidth = metrics.width;
+                }
+                
+                // 2. Siapkan Kanvas Buffer (Tersembunyi)
+                let padding = outlineWidth * 2 + 10;
+                let requiredW = Math.ceil(maxTextWidth + padding * 2);
+                let requiredH = Math.ceil(totalHeight + padding * 2);
+                
+                if (bCanv.width !== requiredW || bCanv.height !== requiredH || window._lastFontStr !== fontStr) {
+                    bCanv.width = requiredW;
+                    bCanv.height = requiredH;
+                    window._lastFontStr = fontStr;
+                } else {
+                    bCtx.clearRect(0, 0, requiredW, requiredH);
+                }
+                
+                // Terapkan ulang font setelah resize
+                bCtx.font = fontStr;
+                bCtx.textAlign = 'left'; // Dikunci ke left agar kalkulasi offset presisi untuk ikon + teks bisa berjalan
+                bCtx.textBaseline = 'top';
+                if (bCtx.letterSpacing !== undefined) bCtx.letterSpacing = ls;
+                
+                let timePL = getRenderTime();
+                let intensity = state.playlistFx.fxIntensity !== undefined ? state.playlistFx.fxIntensity : 0.5;
+                
+                // 3. Cetak teks KE DALAM GAMBAR BUFFER (Sekali Saja)
+                for (let i = 0; i < playlist.length; i++) {
+                    let txt = baseTexts[i];
+                    let itemAlpha = 1.0;
+                    let finalTxt = txt;
+                    let hasIcon = false;
+
+                    if (i === currentTrackIndex) {
+                        hasIcon = (pIconStr !== "");
+                        if (state.playlistFx.blinkIntensity > 0) {
+                            let speedMult = state.playlistFx.blinkIntensity / 50; 
+                            let bMode = state.playlistFx.blinkMode || 'normal';
+                            
+                            if (bMode === 'normal') {
+                                itemAlpha = (Math.sin(timePL * 5 * speedMult) * 0.4) + 0.6;
+                                if (audioReactivity > 0.3) itemAlpha = (Math.sin(timePL * 15 * speedMult) * 0.5) + 0.5;
+                            } else if (bMode === 'fade') {
+                                itemAlpha = (Math.sin(timePL * 3 * speedMult) * 0.5) + 0.5;
+                            } else if (bMode === 'hard') {
+                                itemAlpha = Math.sin(timePL * 8 * speedMult) > 0 ? 1.0 : 0.3;
+                            } else if (bMode === 'typewriter') {
+                                let charsPerSec = Math.max(2, 20 * speedMult); 
+                                let totalChars = txt.length;
+                                let typeDuration = totalChars / charsPerSec;
+                                let pauseFreq = 2.0; // Jeda 2 detik setelah teks selesai diketik
+                                let cycleDuration = typeDuration + pauseFreq;
+                                let currentCycleTime = timePL % cycleDuration;
+                                
+                                let charsToShow = 0;
+                                let showCursor = false;
+                                
+                                if (currentCycleTime < typeDuration) {
+                                    charsToShow = Math.floor(currentCycleTime * charsPerSec);
+                                    showCursor = true;
+                                } else {
+                                    charsToShow = totalChars;
+                                    showCursor = Math.floor(timePL * 4) % 2 === 0; // Kursor kedip di akhir
+                                }
+                                finalTxt = txt.substring(0, charsToShow) + (showCursor ? "|" : "");
+                            }
+                        }
+                    }
+
+                    bCtx.globalAlpha = itemAlpha;
+                    let drawY = padding + (i * lineHeight);
+
+                    // Hitung ukuran akhir untuk perataan (alignment)
+                    let fullStringForAlignment = hasIcon ? `${pIconStr} ${finalTxt}` : finalTxt;
+                    let itemWidth = bCtx.measureText(fullStringForAlignment).width;
+                    
+                    let currentDrawX = padding;
+                    if ((state.playlistFx.align || 'left') === 'center') {
+                        currentDrawX = (requiredW / 2) - (itemWidth / 2);
+                    } else if (state.playlistFx.align === 'right') {
+                        currentDrawX = requiredW - padding - itemWidth;
+                    }
+
+                    // Fungsi internal penggambar teks+garis tepi untuk menjaga anti-cacing tetap 100% stabil
+                    const drawTextPart = (textToDraw, x, y, fillColor) => {
+                        bCtx.fillStyle = fillColor;
+                        bCtx.strokeStyle = 'rgba(0, 0, 0, 0.95)';
+                        bCtx.lineWidth = outlineWidth;
+                        bCtx.lineJoin = 'round';
+                        bCtx.miterLimit = 2;
+                        bCtx.shadowColor = 'rgba(0, 0, 0, 1)';
+                        bCtx.shadowBlur = OVERSAMPLE * 1.5; 
+                        
+                        bCtx.strokeText(textToDraw, x, y);
+                        
+                        bCtx.shadowBlur = 0; 
+                        bCtx.fillText(textToDraw, x, y);
+                        return bCtx.measureText(textToDraw).width;
+                    };
+
+                    // Gambar Ikon lalu teks (atau teks saja jika bukan trek yang sedang berjalan)
+                    if (hasIcon) {
+                        let iconW = drawTextPart(pIconStr, currentDrawX, drawY, state.playlistFx.iconColor || state.playlistFx.activeColor);
+                        let spaceW = bCtx.measureText(" ").width;
+                        drawTextPart(finalTxt, currentDrawX + iconW + spaceW, drawY, state.playlistFx.activeColor);
+                    } else {
+                        let fillColor = (i === currentTrackIndex) ? state.playlistFx.activeColor : state.playlistFx.color;
+                        drawTextPart(finalTxt, currentDrawX, drawY, fillColor);
+                    }
+                }
+                
+                // 4. Tempel Gambar Buffer ke Layar Utama (Zoom/Denyut diaplikasikan pada Gambar, bukan Teks Vektor)
                 let startX = 40 + (state.playlistFx.offsetX || 0); 
                 let startY = 40 + (state.playlistFx.offsetY || 0);
                 
-                let lineHeight = fontSize * state.playlistFx.spacing;
-                let maxWidth = 0;
-                let totalHeight = playlist.length * lineHeight;
-
                 let scaleW = state.playlistFx.scaleWidth !== undefined ? state.playlistFx.scaleWidth : 1.0;
                 let scaleH = state.playlistFx.scaleHeight !== undefined ? state.playlistFx.scaleHeight : 1.0;
-                let intensity = state.playlistFx.fxIntensity !== undefined ? state.playlistFx.fxIntensity : 0.5;
-
-                let timePL = getRenderTime();
+                
                 let animScale = 1;
                 let animX = 0;
                 let animY = 0;
@@ -3390,66 +3611,84 @@
                     animRot = Math.sin(timePL * 1.0) * (0.05 * intensity);
                 }
 
-                let finalTransX = Math.round(startX + animX);
-                let finalTransY = Math.round(startY + animY);
+                // Kunci presisi desimal untuk mematikan micro-jitter (sisa getaran cacing)
+                animScale = Math.round(animScale * 1000) / 1000;
+                animX = Math.round(animX * 2) / 2;
+                animY = Math.round(animY * 2) / 2;
+                animRot = Math.round(animRot * 1000) / 1000;
 
-                ctx.translate(finalTransX, finalTransY);
+                ctx.translate(startX + animX, startY + animY);
                 ctx.rotate(animRot);
-                ctx.scale(scaleW * animScale, scaleH * animScale);
-
-                for (let i = 0; i < playlist.length; i++) {
-                    let trackName = playlist[i].file.name.replace(/\.[^/.]+$/, "");
-                    
-                    if (state.playlistFx.transform === 'uppercase') {
-                        trackName = trackName.toUpperCase();
-                    }
-
-                    let numStr = (i + 1).toString().padStart(2, '0');
-                    let displayText = `${numStr}. ${trackName}`;
-
-                    let itemAlpha = 1.0;
-
-                    if (i === currentTrackIndex) {
-                        ctx.fillStyle = state.playlistFx.activeColor; 
-                        
-                        if (state.playlistFx.blinkIntensity > 0) {
-                            let time = getRenderTime();
-                            let speedMult = state.playlistFx.blinkIntensity / 50; 
-                            
-                            itemAlpha = (Math.sin(time * 5 * speedMult) * 0.4) + 0.6;
-                            if (audioReactivity > 0.3) {
-                                itemAlpha = (Math.sin(time * 15 * speedMult) * 0.5) + 0.5;
-                            }
-                        }
-                    } else {
-                        ctx.fillStyle = state.playlistFx.color;       
-                    }
-
-                    ctx.globalAlpha = itemAlpha;
-
-                    ctx.fillText(displayText, 0, i * lineHeight);
-                    
-                    ctx.shadowBlur = 0;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                    ctx.fillText(displayText, 0, i * lineHeight);
-                    
-                    ctx.shadowBlur = 8;
-                    ctx.shadowOffsetX = 3;
-                    ctx.shadowOffsetY = 3;
-
-                    let metrics = ctx.measureText(displayText);
-                    if (metrics.width > maxWidth) maxWidth = metrics.width;
-                }
                 
-                ctx.globalAlpha = 1.0;
+                let currentScaleW = (scaleW * animScale) / OVERSAMPLE;
+                let currentScaleH = (scaleH * animScale) / OVERSAMPLE;
+                ctx.scale(currentScaleW, currentScaleH);
 
-                let pAlign = state.playlistFx.align || 'left';
+                let anchorX = padding;
+                if ((state.playlistFx.align || 'left') === 'center') anchorX = requiredW / 2;
+                else if (state.playlistFx.align === 'right') anchorX = requiredW - padding;
+                let anchorY = padding;
+
+                // --- 5. GAMBAR MASKING BACKGROUND (Di belakang buffer teks) ---
+                if (state.playlistFx.maskEnabled) {
+                    ctx.save();
+                    let maskOp = state.playlistFx.maskOpacity !== undefined ? state.playlistFx.maskOpacity : 0.7;
+                    
+                    // Padding mask diperkecil agar lebih mepet ke list lagu
+                    let mPadX = 15 * OVERSAMPLE;
+                    let mPadTop = 5 * OVERSAMPLE;    // Padding atas sangat mepet
+                    let mPadBottom = -10 * OVERSAMPLE; // Padding bawah dikurangi (dinaikkan) agar sama mepetnya
+                    
+                    // Menghitung posisi dan ukuran area teks sesungguhnya (mengabaikan padding buffer)
+                    let textLeft = -anchorX + padding;
+                    let textTop = -anchorY + padding;
+
+                    let mx = textLeft - mPadX;
+                    let my = textTop - mPadTop;
+                    let mw = maxTextWidth + (mPadX * 2);
+                    let mh = totalHeight + mPadTop + mPadBottom; // Tinggi disesuaikan dengan padding atas & bawah
+                    
+                    let mDir = state.playlistFx.maskDirection || 'left_right';
+                    
+                    if (mDir === 'solid') {
+                        ctx.fillStyle = `rgba(0, 0, 0, ${maskOp})`;
+                    } else {
+                        let grad;
+                        if (mDir === 'left_right') {
+                            grad = ctx.createLinearGradient(mx, my, mx + mw, my);
+                            grad.addColorStop(0, `rgba(0, 0, 0, ${maskOp})`);
+                            grad.addColorStop(0.8, `rgba(0, 0, 0, ${maskOp * 0.5})`);
+                            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        } else if (mDir === 'right_left') {
+                            grad = ctx.createLinearGradient(mx + mw, my, mx, my);
+                            grad.addColorStop(0, `rgba(0, 0, 0, ${maskOp})`);
+                            grad.addColorStop(0.8, `rgba(0, 0, 0, ${maskOp * 0.5})`);
+                            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        } else if (mDir === 'top_bottom') {
+                            grad = ctx.createLinearGradient(mx, my, mx, my + mh);
+                            grad.addColorStop(0, `rgba(0, 0, 0, ${maskOp})`);
+                            grad.addColorStop(0.8, `rgba(0, 0, 0, ${maskOp * 0.5})`);
+                            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        }
+                        ctx.fillStyle = grad;
+                    }
+                    ctx.fillRect(mx, my, mw, mh);
+                    ctx.restore();
+                }
+
+                // 6. Gambar Teks Buffer
+                ctx.drawImage(bCanv, -anchorX, -anchorY);
+                
+                // Update Bounding Box agar fitur "Geser Presisi" tetap akurat
+                let realMaxWidth = maxTextWidth / OVERSAMPLE;
+                let realTotalHeight = totalHeight / OVERSAMPLE;
+                
                 let bboxX = startX;
-                if (pAlign === 'center') bboxX = startX - (maxWidth / 2) * scaleW;
-                else if (pAlign === 'right') bboxX = startX - maxWidth * scaleW;
+                let pAlign = state.playlistFx.align || 'left';
+                if (pAlign === 'center') bboxX = startX - (realMaxWidth / 2) * scaleW;
+                else if (pAlign === 'right') bboxX = startX - realMaxWidth * scaleW;
 
-                bboxes.playlist = { x: bboxX, y: startY, w: maxWidth * scaleW, h: totalHeight * scaleH };
+                bboxes.playlist = { x: bboxX, y: startY, w: realMaxWidth * scaleW, h: realTotalHeight * scaleH };
                 ctx.restore();
             }
 
@@ -3546,6 +3785,9 @@
             setBtn('playlistAlignGroup', state.playlistFx.align);
             setVal('playlistTransformGroup', state.playlistFx.transform);
             setBtn('playlistEffectGroup', state.playlistFx.effect);
+            setBtn('playlistBlinkModeGroup', state.playlistFx.blinkMode);
+            setVal('playlistIconSelect', state.playlistFx.icon);
+            setVal('playlistIconColorPicker', state.playlistFx.iconColor || '#ef4444');
             
             const btnPItalic = document.getElementById('btnPlaylistItalic');
             if(btnPItalic) { if(state.playlistFx.italic) btnPItalic.classList.add('btn-active'); else btnPItalic.classList.remove('btn-active'); }
