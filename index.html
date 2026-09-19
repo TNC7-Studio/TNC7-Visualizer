@@ -137,10 +137,13 @@
             border-radius: 2px;
         }
 
+        /* Hapus styling khusus Hue Slider karena akan diganti input color */
+        /*
         #vizHueSlider::-webkit-slider-runnable-track,
         #textHueSlider::-webkit-slider-runnable-track {
             background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
         }
+        */
         
         select.custom-select, input[type=text].custom-input {
             appearance: none;
@@ -511,14 +514,14 @@
                     <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider mt-1 uppercase">Warna</span>
                     <div class="flex flex-col gap-1 flex-1">
                         <div class="flex gap-1 flex-wrap" id="vizColorModeGroup">
-                            <button class="btn-custom btn-active" data-val="auto">ARGB (Auto)</button>
-                            <button class="btn-custom" data-val="custom">Warna Statis</button>
+                            <button class="btn-custom btn-active" data-val="auto">ARGB</button>
+                            <button class="btn-custom" data-val="custom">Statis</button>
                         </div>
                         <div class="flex items-center gap-1 w-full mt-0">
                             <span class="text-[9px] text-gray-400 w-8" id="vizColorLabel">Speed</span>
                             <div class="flex-1 flex items-center">
                                 <input type="range" min="1" max="100" value="15" id="vizArgbSpeedSlider">
-                                <input type="range" min="0" max="360" value="0" id="vizHueSlider" class="hidden">
+                                <input type="color" id="vizColorPicker" value="#ff0000" class="hidden w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
                             </div>
                         </div>
                     </div>
@@ -611,19 +614,13 @@
                     <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider mt-1 uppercase">Warna</span>
                     <div class="flex flex-col gap-1 flex-1">
                         <div class="flex gap-1 flex-wrap" id="textColorModeGroup">
-                            <button class="btn-custom" data-val="statis">Statis</button>
                             <button class="btn-custom btn-active" data-val="auto">ARGB</button>
+                            <button class="btn-custom" data-val="statis">Statis</button>
                         </div>
                         <div class="flex items-center gap-1 w-full mt-0" id="textStaticColorGroup" style="display: none;">
                             <span class="text-[9px] text-gray-400 w-8">Pilih</span>
-                            <div class="flex-1">
-                                <input type="color" id="textColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1 w-full mt-0" id="textHueColorGroup" style="display: none;">
-                            <span class="text-[9px] text-gray-400 w-8">Hue</span>
                             <div class="flex-1 flex items-center">
-                                <input type="range" min="0" max="360" value="0" id="textHueSlider">
+                                <input type="color" id="textColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
                             </div>
                         </div>
                         <div class="flex items-center gap-1 w-full mt-0" id="textArgbSpeedGroup">
@@ -639,15 +636,6 @@
                     <div class="flex items-center gap-1 w-full pr-1">
                         <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Ukuran</span>
                         <input type="range" id="textSizeSlider" min="10" max="200" value="40" class="flex-1">
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-1 mt-1">
-                    <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Align</span>
-                    <div class="flex flex-wrap gap-1 flex-1" id="textAlignGroup">
-                        <button class="btn-custom btn-active" data-val="left"><i class="fa-solid fa-align-left text-[8px]"></i></button>
-                        <button class="btn-custom" data-val="center"><i class="fa-solid fa-align-center text-[8px]"></i></button>
-                        <button class="btn-custom" data-val="right"><i class="fa-solid fa-align-right text-[8px]"></i></button>
                     </div>
                 </div>
 
@@ -1016,10 +1004,10 @@
         });
 
         const state = {
-            viz: { enabled: true, align: 'full', size: 0.5, width: 0.5, opacity: 1.0, type: 'modern_cyber_bars_solid', offsetX: 0, offsetY: 0, colorMode: 'custom', hue: 45, argbSpeed: 15 },
+            viz: { enabled: true, align: 'full', size: 0.5, width: 0.5, opacity: 1.0, type: 'modern_cyber_bars_solid', offsetX: 0, offsetY: 0, colorMode: 'custom', staticColor: '#ff0000', argbSpeed: 15 },
             bg: { color: '#0f1115', image: null, imgElement: null, effect: 'normal', weather: ['normal'], darkness: 0, pulseIntensity: 0.50, scale: 1.0, snowIntensity: 50, weatherSpeed: 50, mirror: false },
             overlay: { element: null, type: null, lapisan: 'depan', blend: 'normal', size: 0.5, opacity: 1, speed: 0.5, anim: 'none', offsetX: 0, offsetY: 0, animTime: 0, lastDrawTime: 0 },
-            textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', hue: 0, argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
+            textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
             timeFx: { enabled: false, format: 'duration', font: "'Share Tech Mono', monospace", size: 30, color: '#ffffff', opacity: 1.0, offsetX: 0, offsetY: 0 },
             playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, blinkMode: 'normal', scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5, icon: 'none', iconColor: '#ef4444', maskEnabled: false, maskDirection: 'left_right', maskOpacity: 0.7, maskColor: '#000000', maskPrecision: 1.0 },
             render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah' }
@@ -1170,7 +1158,6 @@
 
         const textColorModeGroup = document.getElementById('textColorModeGroup');
         const textStaticColorGroup = document.getElementById('textStaticColorGroup');
-        const textHueColorGroup = document.getElementById('textHueColorGroup');
         const textArgbSpeedGroup = document.getElementById('textArgbSpeedGroup');
 
         if (textColorModeGroup) {
@@ -1179,11 +1166,9 @@
                     const mode = btn.getAttribute('data-val');
                     if (mode === 'auto') {
                         textStaticColorGroup.style.display = 'none';
-                        textHueColorGroup.style.display = 'none';
                         textArgbSpeedGroup.style.display = 'flex';
                     } else if (mode === 'statis') {
                         textStaticColorGroup.style.display = 'flex';
-                        textHueColorGroup.style.display = 'flex';
                         textArgbSpeedGroup.style.display = 'none';
                     }
                 });
@@ -1191,7 +1176,6 @@
         }
         
         document.getElementById('textArgbSpeedSlider').addEventListener('input', (e) => { state.textFx.argbSpeed = parseFloat(e.target.value); });
-        document.getElementById('textHueSlider').addEventListener('input', (e) => { state.textFx.hue = parseFloat(e.target.value); });
 
         document.getElementById('vizEnable').addEventListener('change', (e) => { state.viz.enabled = e.target.checked; });
         document.getElementById('textEnable').addEventListener('change', (e) => { state.textFx.enabled = e.target.checked; });
@@ -1314,22 +1298,22 @@
         const vizColorModeGroup = document.getElementById('vizColorModeGroup');
         const vizColorLabel = document.getElementById('vizColorLabel');
         const vizArgbSpeedSlider = document.getElementById('vizArgbSpeedSlider');
-        const vizHueSlider = document.getElementById('vizHueSlider');
+        const vizColorPicker = document.getElementById('vizColorPicker');
 
         if (vizColorModeGroup) {
             vizColorModeGroup.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (state.viz.colorMode === 'auto') {
-                        vizColorLabel.textContent = 'Speed'; vizArgbSpeedSlider.classList.remove('hidden'); vizHueSlider.classList.add('hidden');
+                        vizColorLabel.textContent = 'Speed'; vizArgbSpeedSlider.classList.remove('hidden'); vizColorPicker.classList.add('hidden');
                     } else {
-                        vizColorLabel.textContent = 'Hue'; vizArgbSpeedSlider.classList.add('hidden'); vizHueSlider.classList.remove('hidden');
+                        vizColorLabel.textContent = 'Warna'; vizArgbSpeedSlider.classList.add('hidden'); vizColorPicker.classList.remove('hidden');
                     }
                 });
             });
         }
         
         document.getElementById('vizArgbSpeedSlider').addEventListener('input', (e) => { state.viz.argbSpeed = parseFloat(e.target.value); });
-        document.getElementById('vizHueSlider').addEventListener('input', (e) => { state.viz.hue = parseFloat(e.target.value); });
+        document.getElementById('vizColorPicker').addEventListener('input', (e) => { state.viz.staticColor = e.target.value; });
         
         const vizTypeSelect = document.getElementById('vizTypeSelect');
         vizTypeSelect.addEventListener('change', (e) => { state.viz.type = e.target.value; });
@@ -2979,9 +2963,17 @@
 
             if(state.viz.enabled && dataArray && (audioElement.src || isOfflineRendering)) {
                 let time = getRenderTime();
-                let baseHue = 0;
-                if (state.viz.colorMode === 'auto') { baseHue = (time * state.viz.argbSpeed) % 360; } 
-                else { baseHue = state.viz.hue; }
+                let baseColorStr = '';
+                let baseHue = 0; // Masih digunakan untuk modern cyber bars / DNA yang butuh base hue int
+
+                if (state.viz.colorMode === 'auto') { 
+                    baseHue = (time * state.viz.argbSpeed) % 360; 
+                    baseColorStr = `hsl(${baseHue}, 100%, 60%)`;
+                } else { 
+                    baseColorStr = state.viz.staticColor;
+                    // Ekstrak HSL kasar jika tipe visualizer butuh manipulasi hue
+                    // Untuk kesederhanaan visualizer statis, kita paksakan warna solid jika tipe-nya butuh hue dinamis tapi diset statis.
+                }
                 
                 let vizY = cy;
                 if(state.viz.align === 'bawah') vizY = h - (h * 0.1);
@@ -2991,7 +2983,7 @@
                 let currentVizY = vizY + (state.viz.offsetY || 0);
 
                 const maxH = h * state.viz.size;
-                const solidColor = `hsl(${baseHue}, 100%, 60%)`;
+                const solidColor = baseColorStr;
                 
                 ctx.globalAlpha = state.viz.opacity !== undefined ? state.viz.opacity : 1.0;
                 ctx.fillStyle = solidColor; ctx.strokeStyle = solidColor;
@@ -3072,7 +3064,7 @@
 
                     if(state.viz.type === 'wave_double') {
                         ctx.stroke(); ctx.beginPath();
-                        ctx.strokeStyle = `hsl(${(baseHue + 180) % 360}, 100%, 60%)`; 
+                        ctx.strokeStyle = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + 180) % 360}, 100%, 60%)` : baseColorStr; 
                         let dpX = startWaveX;
                         let dpY = currentVizY - (((dataArray[0] / 128.0) - 1) * (h / 2) * amp);
                         ctx.moveTo(dpX, dpY);
@@ -3085,7 +3077,19 @@
                     
                     if(state.viz.type.includes('fill')) {
                          ctx.lineTo(startWaveX + totalWaveWidth, currentVizY); ctx.closePath();
-                         ctx.fillStyle = `hsla(${baseHue}, 100%, 50%, 0.4)`; ctx.fill(); ctx.stroke();
+                         
+                         // Konversi HEX ke RGBA kasar untuk fill
+                         let r=255, g=0, b=0;
+                         if (state.viz.colorMode === 'custom' && /^#[0-9A-F]{6}$/i.test(baseColorStr)) {
+                             r = parseInt(baseColorStr.substring(1,3), 16);
+                             g = parseInt(baseColorStr.substring(3,5), 16);
+                             b = parseInt(baseColorStr.substring(5,7), 16);
+                             ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.4)`;
+                         } else {
+                             ctx.fillStyle = `hsla(${baseHue}, 100%, 50%, 0.4)`; 
+                         }
+                         
+                         ctx.fill(); ctx.stroke();
                     } else if (!state.viz.type.includes('dots')) { ctx.stroke(); }
                     
                     if (!isOfflineRendering) analyser.getByteFrequencyData(dataArray); 
@@ -3104,14 +3108,14 @@
                             if(n.x > limit || n.x < -limit) n.vx *= -1; if(n.y > limit || n.y < -limit) n.vy *= -1;
 
                             ctx.globalAlpha = state.viz.opacity !== undefined ? state.viz.opacity : 1.0;
-                            ctx.fillStyle = `hsl(${baseHue}, 100%, 60%)`; ctx.beginPath(); ctx.arc(n.x, n.y, 2 + (val * 5), 0, PI2); ctx.fill();
+                            ctx.fillStyle = baseColorStr; ctx.beginPath(); ctx.arc(n.x, n.y, 2 + (val * 5), 0, PI2); ctx.fill();
 
                             for(let j=i+1; j<window.plexusNodes.length; j++) {
                                 let n2 = window.plexusNodes[j]; let dist = Math.hypot(n.x-n2.x, n.y-n2.y);
                                 let connectDist = radiusScale * 0.8;
                                 if(dist < connectDist) {
                                     ctx.globalAlpha = (1 - (dist / connectDist)) * (state.viz.opacity !== undefined ? state.viz.opacity : 1.0);
-                                    ctx.strokeStyle = `hsl(${(baseHue + 30)%360}, 100%, 60%)`; ctx.beginPath();
+                                    ctx.strokeStyle = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + 30)%360}, 100%, 60%)` : baseColorStr; ctx.beginPath();
                                     ctx.moveTo(n.x, n.y); ctx.lineTo(n2.x, n2.y); ctx.stroke();
                                 }
                             }
@@ -3133,10 +3137,14 @@
                             let xPos = startX + (i * spacing);
                             
                             let barColor;
-                            if (state.viz.type === 'modern_cyber_bars_solid') {
-                                barColor = `hsl(${baseHue}, 100%, 50%)`;
+                            if (state.viz.colorMode === 'custom') {
+                                barColor = baseColorStr;
                             } else {
-                                barColor = `hsl(${(baseHue + i*(90/barCount))%360}, 100%, 50%)`;
+                                if (state.viz.type === 'modern_cyber_bars_solid') {
+                                    barColor = `hsl(${baseHue}, 100%, 50%)`;
+                                } else {
+                                    barColor = `hsl(${(baseHue + i*(90/barCount))%360}, 100%, 50%)`;
+                                }
                             }
                             
                             ctx.shadowColor = barColor; ctx.fillStyle = barColor;
@@ -3172,12 +3180,25 @@
                             
                             if (val > 0.1) {
                                 ctx.beginPath(); ctx.moveTo(xPos1 * scale1, yPos); ctx.lineTo(xPos2 * scale2, yPos);
-                                ctx.strokeStyle = `hsla(${baseHue}, 100%, 60%, ${val * 0.5})`; ctx.lineWidth = 1 + val * 2; ctx.stroke();
+                                if (state.viz.colorMode === 'auto') {
+                                    ctx.strokeStyle = `hsla(${baseHue}, 100%, 60%, ${val * 0.5})`; 
+                                } else {
+                                    // Parse Hex to Rgba
+                                    let r = parseInt(baseColorStr.substring(1,3), 16); let g = parseInt(baseColorStr.substring(3,5), 16); let b = parseInt(baseColorStr.substring(5,7), 16);
+                                    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${val * 0.5})`;
+                                }
+                                ctx.lineWidth = 1 + val * 2; ctx.stroke();
                             }
                             let drawNode = (x, y, s, z, isFront) => {
                                 ctx.beginPath(); let r = 3 + (val * 8) * s; ctx.arc(x, y, Math.max(1, r), 0, PI2);
-                                let nodeHue = (baseHue + (isFront ? 0 : 180) + (yProgress*120)) % 360;
-                                ctx.fillStyle = `hsla(${nodeHue}, 100%, 60%, ${0.4 + s * 0.6})`;
+                                
+                                if (state.viz.colorMode === 'auto') {
+                                    let nodeHue = (baseHue + (isFront ? 0 : 180) + (yProgress*120)) % 360;
+                                    ctx.fillStyle = `hsla(${nodeHue}, 100%, 60%, ${0.4 + s * 0.6})`;
+                                } else {
+                                    let rd = parseInt(baseColorStr.substring(1,3), 16); let gd = parseInt(baseColorStr.substring(3,5), 16); let bd = parseInt(baseColorStr.substring(5,7), 16);
+                                    ctx.fillStyle = `rgba(${rd}, ${gd}, ${bd}, ${0.4 + s * 0.6})`;
+                                }
                                 ctx.shadowBlur = s * 10 * val; ctx.shadowColor = ctx.fillStyle; ctx.fill();
                             };
                             if (zPos1 < zPos2) { drawNode(xPos1 * scale1, yPos, scale1, zPos1, true); drawNode(xPos2 * scale2, yPos, scale2, zPos2, false); } 
@@ -3197,9 +3218,9 @@
                             let seed = (i * 137.5) % 1; let baseHeight = maxBldgHeight * 0.1 * (seed + 0.5); let finalHeight = baseHeight + targetHeight;
                             let x = i * bldgWidth;
                             
-                            let bColor = `hsl(${(baseHue + distFromCenter*120)%360}, 80%, ${10 + val*40}%)`;
+                            let bColor = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + distFromCenter*120)%360}, 80%, ${10 + val*40}%)` : baseColorStr;
                             ctx.fillStyle = bColor; ctx.fillRect(x + 1, -finalHeight, bldgWidth - 2, finalHeight);
-                            ctx.fillStyle = `hsl(${(baseHue + distFromCenter*120)%360}, 100%, 60%)`; ctx.fillRect(x + 1, -finalHeight, bldgWidth - 2, Math.max(2, val * 8));
+                            ctx.fillStyle = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + distFromCenter*120)%360}, 100%, 60%)` : baseColorStr; ctx.fillRect(x + 1, -finalHeight, bldgWidth - 2, Math.max(2, val * 8));
                             
                             if (val > 0.3 && bldgWidth > 10) {
                                 ctx.fillStyle = `rgba(255, 255, 255, ${val})`;
@@ -3215,7 +3236,7 @@
                             let val = (dataArray[dataIdx] || 0) / 255; let seed = (i * 137.5) % 1;
                             let finalHeight = (maxBldgHeight * 0.1 * (seed + 0.5)) + (val * maxBldgHeight);
                             let x = i * bldgWidth;
-                            ctx.fillStyle = `hsl(${(baseHue + distFromCenter*120)%360}, 100%, 50%)`; ctx.fillRect(x + 1, 0, bldgWidth - 2, -finalHeight);
+                            ctx.fillStyle = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + distFromCenter*120)%360}, 100%, 50%)` : baseColorStr; ctx.fillRect(x + 1, 0, bldgWidth - 2, -finalHeight);
                         }
                         ctx.restore(); bboxes.viz = { x: currentCx - cityWidth/2, y: currentVizY - maxBldgHeight*0.6, w: cityWidth, h: maxBldgHeight*1.2 };
                     }
@@ -3230,9 +3251,17 @@
                                 let x = c * pixelW; let y = maxH - ((r + 1) * pixelH);
                                 ctx.beginPath(); ctx.rect(x + gap/2, y + gap/2, pixelW - gap, pixelH - gap);
                                 if (r < activeRows) {
-                                    let pColor = `hsl(${(baseHue + (r/rows)*120)%360}, 100%, ${50 + (val*20)}%)`;
+                                    let pColor = state.viz.colorMode === 'auto' ? `hsl(${(baseHue + (r/rows)*120)%360}, 100%, ${50 + (val*20)}%)` : baseColorStr;
                                     ctx.fillStyle = pColor; ctx.shadowBlur = 10; ctx.shadowColor = pColor; ctx.fill();
-                                } else { ctx.fillStyle = `hsla(${baseHue}, 20%, 20%, 0.2)`; ctx.shadowBlur = 0; ctx.fill(); }
+                                } else { 
+                                    if (state.viz.colorMode === 'auto') {
+                                        ctx.fillStyle = `hsla(${baseHue}, 20%, 20%, 0.2)`; 
+                                    } else {
+                                        let rp = parseInt(baseColorStr.substring(1,3), 16); let gp = parseInt(baseColorStr.substring(3,5), 16); let bp = parseInt(baseColorStr.substring(5,7), 16);
+                                        ctx.fillStyle = `rgba(${rp}, ${gp}, ${bp}, 0.2)`;
+                                    }
+                                    ctx.shadowBlur = 0; ctx.fill(); 
+                                }
                             }
                         }
                         ctx.shadowBlur = 0; ctx.restore(); bboxes.viz = { x: currentCx - totalW/2, y: currentVizY - maxH/2, w: totalW, h: maxH };
@@ -3263,9 +3292,8 @@
                 if (state.textFx.colorMode === 'auto') { 
                     baseTextHue = (time * (state.textFx.argbSpeed || 15)) % 360; 
                     state.textFx.color = `hsl(${baseTextHue}, 100%, 60%)`;
-                } else if (state.textFx.colorMode === 'statis' && state.textFx.hue > 0) {
-                     state.textFx.color = `hsl(${state.textFx.hue}, 100%, 60%)`;
-                }
+                } 
+                // Tidak perlu else statis, karena input type="color" sudah mengupdate state.textFx.color dengan format hex
                 
                 let alpha = 1; let scale = 1; let finalDisplayText = displayText;
 
@@ -3649,7 +3677,7 @@
             setVal('vizOpacitySlider', state.viz.opacity * 100);
             setBtn('vizColorModeGroup', state.viz.colorMode);
             setVal('vizArgbSpeedSlider', state.viz.argbSpeed);
-            setVal('vizHueSlider', state.viz.hue);
+            setVal('vizColorPicker', state.viz.staticColor);
             setVal('vizTypeSelect', state.viz.type);
 
             const wg = document.getElementById('bgWeatherGroup');
@@ -3678,7 +3706,6 @@
             setVal('textFontSelect', state.textFx.font);
             setBtn('textColorModeGroup', state.textFx.colorMode);
             setVal('textColorPicker', state.textFx.color);
-            setVal('textHueSlider', state.textFx.hue);
             setVal('textArgbSpeedSlider', state.textFx.argbSpeed);
             setVal('textSizeSlider', state.textFx.size);
             setBtn('textAlignGroup', state.textFx.align);
@@ -3728,22 +3755,20 @@
             
             if (state.textFx.colorMode === 'auto') {
                 document.getElementById('textStaticColorGroup').style.display = 'none';
-                document.getElementById('textHueColorGroup').style.display = 'none';
                 document.getElementById('textArgbSpeedGroup').style.display = 'flex';
             } else {
                 document.getElementById('textStaticColorGroup').style.display = 'flex';
-                document.getElementById('textHueColorGroup').style.display = 'flex';
                 document.getElementById('textArgbSpeedGroup').style.display = 'none';
             }
 
             if (state.viz.colorMode === 'auto') {
                 document.getElementById('vizColorLabel').textContent = 'Speed'; 
                 document.getElementById('vizArgbSpeedSlider').classList.remove('hidden'); 
-                document.getElementById('vizHueSlider').classList.add('hidden');
+                document.getElementById('vizColorPicker').classList.add('hidden');
             } else {
-                document.getElementById('vizColorLabel').textContent = 'Hue'; 
+                document.getElementById('vizColorLabel').textContent = 'Warna'; 
                 document.getElementById('vizArgbSpeedSlider').classList.add('hidden'); 
-                document.getElementById('vizHueSlider').classList.remove('hidden');
+                document.getElementById('vizColorPicker').classList.remove('hidden');
             }
         }
 
