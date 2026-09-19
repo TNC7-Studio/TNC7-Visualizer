@@ -520,8 +520,8 @@
                         <div class="flex items-center gap-1 w-full mt-0">
                             <span class="text-[9px] text-gray-400 w-8" id="vizColorLabel">Speed</span>
                             <div class="flex-1 flex items-center">
-                                <input type="range" min="1" max="100" value="15" id="vizArgbSpeedSlider">
-                                <input type="color" id="vizColorPicker" value="#ff0000" class="hidden w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
+                                <input type="range" min="1" max="100" value="15" id="vizArgbSpeedSlider" class="">
+                                <input type="color" id="vizColorPicker" value="#facc15" class="hidden w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
                             </div>
                         </div>
                     </div>
@@ -1004,7 +1004,7 @@
         });
 
         const state = {
-            viz: { enabled: true, align: 'full', size: 0.5, width: 0.5, opacity: 1.0, type: 'modern_cyber_bars_solid', offsetX: 0, offsetY: 0, colorMode: 'custom', staticColor: '#ff0000', argbSpeed: 15 },
+            viz: { enabled: true, align: 'full', size: 0.5, width: 0.5, opacity: 1.0, type: 'modern_cyber_bars', offsetX: 0, offsetY: 0, colorMode: 'auto', staticColor: '#facc15', argbSpeed: 15 },
             bg: { color: '#0f1115', image: null, imgElement: null, effect: 'normal', weather: ['normal'], darkness: 0, pulseIntensity: 0.50, scale: 1.0, snowIntensity: 50, weatherSpeed: 50, mirror: false },
             overlay: { element: null, type: null, lapisan: 'depan', blend: 'normal', size: 0.5, opacity: 1, speed: 0.5, anim: 'none', offsetX: 0, offsetY: 0, animTime: 0, lastDrawTime: 0 },
             textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
