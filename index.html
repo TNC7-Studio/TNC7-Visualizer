@@ -632,10 +632,16 @@
                     </div>
                 </div>
 
-                <div class="flex items-center text-[9px] justify-between w-full mt-1">
-                    <div class="flex items-center gap-1 w-full pr-1">
-                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Ukuran</span>
+                <div class="flex items-center text-[9px] justify-between w-full mt-1 border border-[#2a3142] rounded p-1">
+                    <div class="flex items-center gap-1 flex-1 pr-1">
+                        <span class="text-[9px] font-bold text-gray-500 w-8 tracking-wider uppercase">Ukr</span>
                         <input type="range" id="textSizeSlider" min="10" max="200" value="40" class="flex-1">
+                    </div>
+                    <div class="w-px h-4 bg-gray-600 mx-1"></div>
+                    <div class="flex items-center gap-1" id="textAlignGroup">
+                        <button class="btn-custom w-5 h-5 p-0 btn-active" data-val="left" title="Rata Kiri"><i class="fa-solid fa-align-left text-[9px]"></i></button>
+                        <button class="btn-custom w-5 h-5 p-0" data-val="center" title="Rata Tengah"><i class="fa-solid fa-align-center text-[9px]"></i></button>
+                        <button class="btn-custom w-5 h-5 p-0" data-val="right" title="Rata Kanan"><i class="fa-solid fa-align-right text-[9px]"></i></button>
                     </div>
                 </div>
 
