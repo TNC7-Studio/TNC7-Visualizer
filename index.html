@@ -3471,6 +3471,7 @@
                     ctx.fillStyle = state.textFx.color; ctx.fillText(finalDisplayText, 0, 0);
                 }
                 
+                let textW = ctx.measureText(finalDisplayText).width * scale;
                 let textH = fontSize * scale;
                 let bboxX = textX;
                 
