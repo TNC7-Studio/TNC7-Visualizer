@@ -415,6 +415,20 @@
 
             <div class="w-px h-4 bg-gray-700 mx-1"></div>
             
+            <div class="flex items-center gap-1">
+                <span class="text-[10px] font-bold text-gray-500 tracking-wider mr-1 uppercase">Kualitas:</span>
+                <select id="renderResolutionSelect" class="custom-select w-16" title="Resolusi Video">
+                    <option value="720">720p</option>
+                    <option value="1080">1080p</option>
+                </select>
+                <select id="renderFpsSelect" class="custom-select w-[68px] ml-1" title="Frame Rate">
+                    <option value="30">30 FPS</option>
+                    <option value="60">60 FPS</option>
+                </select>
+            </div>
+            
+            <div class="w-px h-4 bg-gray-700 mx-1"></div>
+            
             <div class="flex items-center gap-1" id="renderBitrateModeGroup">
                 <span class="text-[10px] font-bold text-gray-500 tracking-wider mr-1">BITRATE:</span>
                 <button class="btn-custom btn-active" data-val="variable" title="Variable Bitrate (Ukuran file lebih kecil, kualitas dinamis)">VBR</button>
@@ -1016,7 +1030,7 @@
             textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
             timeFx: { enabled: false, format: 'duration', font: "'Share Tech Mono', monospace", size: 30, color: '#ffffff', opacity: 1.0, offsetX: 0, offsetY: 0 },
             playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, blinkMode: 'normal', scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5, icon: 'none', iconColor: '#ef4444', maskEnabled: false, maskDirection: 'left_right', maskOpacity: 0.7, maskColor: '#000000', maskPrecision: 1.0 },
-            render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah' }
+            render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah', resolution: 720, fps: 30 }
         };
 
         let bboxes = { viz: null, overlay: null, text: null, time: null, playlist: null };
@@ -1117,6 +1131,21 @@
         if (renderMethodSelect) {
             renderMethodSelect.addEventListener('change', (e) => {
                 state.render.method = e.target.value;
+            });
+        }
+        
+        const renderResolutionSelect = document.getElementById('renderResolutionSelect');
+        if (renderResolutionSelect) {
+            renderResolutionSelect.addEventListener('change', (e) => {
+                state.render.resolution = parseInt(e.target.value);
+                resizeCanvas();
+            });
+        }
+
+        const renderFpsSelect = document.getElementById('renderFpsSelect');
+        if (renderFpsSelect) {
+            renderFpsSelect.addEventListener('change', (e) => {
+                state.render.fps = parseInt(e.target.value);
             });
         }
         
@@ -1402,8 +1431,13 @@
         let textTransitionStart = 0;
 
         function resizeCanvas() {
-            canvas.width = 1280;
-            canvas.height = 720;
+            if(state.render.resolution === 1080) {
+                canvas.width = 1920;
+                canvas.height = 1080;
+            } else {
+                canvas.width = 1280;
+                canvas.height = 720;
+            }
         }
         window.addEventListener('resize', resizeCanvas);
         setTimeout(resizeCanvas, 100);
@@ -1930,7 +1964,7 @@
             snowflakes = []; raindrops = []; goldDrops = []; lightnings = []; smokes = [];
             window.plexusNodes = null; window.cyberCaps = null;
             smoothedKick = 0;
-            if (canvas) { canvas.width = 1280; canvas.height = 720; }
+            if (canvas) { resizeCanvas(); }
         }
 
         let renderWakeLock = null;
@@ -2011,6 +2045,10 @@
                 const targetSampleRate = 44100;
                 const numChannels = 2; 
                 
+                const renderWidth = state.render.resolution === 1080 ? 1920 : 1280;
+                const renderHeight = state.render.resolution === 1080 ? 1080 : 720;
+                const renderFps = state.render.fps || 30;
+                
                 let downloadName = 'TNC7_Combined_Playlist.mp4';
                 if (playlist.length > 0 && playlist[0].file) {
                     downloadName = playlist[0].file.name.replace(/\.[^/.]+$/, "") + '.mp4';
@@ -2045,7 +2083,7 @@
 
                 muxer = new Mp4Muxer.Muxer({
                     target: streamTarget,
-                    video: { codec: 'avc', width: 1280, height: 720, frameRate: 30 },
+                    video: { codec: 'avc', width: renderWidth, height: renderHeight, frameRate: renderFps },
                     audio: { codec: 'aac', sampleRate: targetSampleRate, numberOfChannels: numChannels },
                     fastStart: false 
                 });
@@ -2062,13 +2100,41 @@
                             abortOfflineRender = true; 
                         } 
                     },
-                    error: (e) => { abortOfflineRender = true; }
+                    error: (e) => { 
+                        console.error("VideoEncoder Error:", e);
+                        abortOfflineRender = true; 
+                    }
                 });
 
-                videoEncoder.configure({
-                    codec: 'avc1.42E01F', width: 1280, height: 720,
-                    bitrate: state.render.targetBitrate, framerate: 30, bitrateMode: state.render.bitrateMode
-                });
+                // --- CEK DUKUNGAN CERDAS (PROBING) UNTUK 1080p ---
+                let videoConfig = {
+                    codec: 'avc1.64002A', // High Profile Level 4.2 (Ideal & Mendukung 1080p 60fps)
+                    width: renderWidth, 
+                    height: renderHeight,
+                    bitrate: state.render.targetBitrate, 
+                    framerate: renderFps, 
+                    bitrateMode: state.render.bitrateMode
+                };
+
+                try {
+                    let support = await window.VideoEncoder.isConfigSupported(videoConfig);
+                    if (!support.supported) {
+                        // Fallback 1: Coba Main Profile
+                        videoConfig.codec = 'avc1.4D402A';
+                        support = await window.VideoEncoder.isConfigSupported(videoConfig);
+                        if (!support.supported) {
+                            // Fallback 2: Buang bitrateMode (sering ditolak browser) & pakai Baseline Level 4.2
+                            delete videoConfig.bitrateMode; 
+                            videoConfig.codec = 'avc1.42E02A'; 
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Probing hardware gagal, menggunakan mode aman CPU.");
+                    delete videoConfig.bitrateMode;
+                    videoConfig.codec = 'avc1.42E02A';
+                }
+
+                videoEncoder.configure(videoConfig);
 
                 audioEncoder = new AudioEncoder({
                     output: (chunk, meta) => { 
@@ -2085,10 +2151,10 @@
                 });
 
                 if (typeof OffscreenCanvas !== 'undefined') {
-                    canvas = new OffscreenCanvas(1280, 720);
+                    canvas = new OffscreenCanvas(renderWidth, renderHeight);
                 } else {
                     canvas = document.createElement('canvas');
-                    canvas.width = 1280; canvas.height = 720;
+                    canvas.width = renderWidth; canvas.height = renderHeight;
                 }
                 ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
@@ -2173,7 +2239,7 @@
                     analyser.connect(offlineCtx.destination);
                     source.start(0);
 
-                    const fps = 30;
+                    const fps = renderFps;
                     const interval = 1 / fps; 
                     forceGarbageCollection();
                     let frameIdx = 0;
@@ -2353,10 +2419,14 @@
                 const duration = originalAudioBuffer.duration;
                 const numChannels = originalAudioBuffer.numberOfChannels;
 
+                const renderWidth = state.render.resolution === 1080 ? 1920 : 1280;
+                const renderHeight = state.render.resolution === 1080 ? 1080 : 720;
+                const renderFps = state.render.fps || 30;
+
                 indicator.textContent = 'SETUP MESIN RENDER...';
                 muxer = new Mp4Muxer.Muxer({
                     target: new Mp4Muxer.ArrayBufferTarget(),
-                    video: { codec: 'avc', width: 1280, height: 720, frameRate: 30 },
+                    video: { codec: 'avc', width: renderWidth, height: renderHeight, frameRate: renderFps },
                     audio: { codec: 'aac', sampleRate: targetSampleRate, numberOfChannels: numChannels },
                     fastStart: "in-memory"
                 });
@@ -2367,18 +2437,40 @@
                         catch (chunkErr) {}
                     },
                     error: (e) => { 
+                        console.error("VideoEncoder Error:", e);
                         abortOfflineRender = true;
                     }
                 });
                 
-                videoEncoder.configure({
-                    codec: 'avc1.42E01F', 
-                    width: 1280, 
-                    height: 720,
+                // --- CEK DUKUNGAN CERDAS (PROBING) UNTUK 1080p ---
+                let videoConfig = {
+                    codec: 'avc1.64002A', // High Profile Level 4.2 (Ideal & Mendukung 1080p 60fps)
+                    width: renderWidth, 
+                    height: renderHeight,
                     bitrate: state.render.targetBitrate,
-                    framerate: 30,
+                    framerate: renderFps,
                     bitrateMode: state.render.bitrateMode
-                });
+                };
+
+                try {
+                    let support = await window.VideoEncoder.isConfigSupported(videoConfig);
+                    if (!support.supported) {
+                        // Fallback 1: Coba Main Profile
+                        videoConfig.codec = 'avc1.4D402A';
+                        support = await window.VideoEncoder.isConfigSupported(videoConfig);
+                        if (!support.supported) {
+                            // Fallback 2: Buang bitrateMode (sering ditolak browser) & pakai Baseline Level 4.2
+                            delete videoConfig.bitrateMode; 
+                            videoConfig.codec = 'avc1.42E02A'; 
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Probing hardware gagal, menggunakan mode CPU dasar.");
+                    delete videoConfig.bitrateMode;
+                    videoConfig.codec = 'avc1.42E02A';
+                }
+
+                videoEncoder.configure(videoConfig);
 
                 audioEncoder = new AudioEncoder({
                     output: (chunk, meta) => {
@@ -2438,10 +2530,10 @@
                 indicator.textContent = 'RENDER VIDEO... 0%';
 
                 if (typeof OffscreenCanvas !== 'undefined') {
-                    canvas = new OffscreenCanvas(1280, 720);
+                    canvas = new OffscreenCanvas(renderWidth, renderHeight);
                 } else {
                     canvas = document.createElement('canvas');
-                    canvas.width = 1280; canvas.height = 720;
+                    canvas.width = renderWidth; canvas.height = renderHeight;
                 }
                 ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
@@ -2457,7 +2549,7 @@
                 analyser.connect(offlineCtx.destination);
                 source.start(0);
 
-                const fps = 30;
+                const fps = renderFps;
                 const interval = 1 / fps; 
                 
                 forceGarbageCollection();
@@ -2684,8 +2776,22 @@
 
         function drawCanvas() {
             if(!ctx || !canvas.width) return;
-            const w = canvas.width;
-            const h = canvas.height;
+            
+            // --- SISTEM RESOLUSI VIRTUAL ---
+            const VIRTUAL_W = 1280;
+            const VIRTUAL_H = 720;
+            const physicalW = canvas.width;
+            const physicalH = canvas.height;
+            const scaleX = physicalW / VIRTUAL_W;
+            const scaleY = physicalH / VIRTUAL_H;
+
+            ctx.save();
+            // Skalakan seluruh canvas ke resolusi terpilih secara otomatis
+            ctx.scale(scaleX, scaleY);
+
+            // Kunci perhitungan logika seolah-olah kanvas selalu 1280x720
+            const w = VIRTUAL_W;
+            const h = VIRTUAL_H;
             const cx = w / 2;
             const cy = h / 2;
             
@@ -3291,8 +3397,10 @@
                     typewriterProgress = 0; lastTrackForText = displayText; textTransitionStart = time;
                 }
 
-                let fontSize = state.textFx.size; let speedMult = (state.textFx.animSpeed !== undefined ? state.textFx.animSpeed : 50) / 50;
-                let textX = cx + (state.textFx.offsetX || 0); let textY = (h * 0.15) + (state.textFx.offsetY || 0);
+                let fontSize = state.textFx.size; 
+                let speedMult = (state.textFx.animSpeed !== undefined ? state.textFx.animSpeed : 50) / 50;
+                let textX = cx + (state.textFx.offsetX || 0); 
+                let textY = (h * 0.15) + (state.textFx.offsetY || 0);
                 
                 let baseTextHue = 0;
                 if (state.textFx.colorMode === 'auto') { 
@@ -3363,8 +3471,7 @@
                     ctx.fillStyle = state.textFx.color; ctx.fillText(finalDisplayText, 0, 0);
                 }
                 
-                let metrics = ctx.measureText(finalDisplayText);
-                let textW = metrics.width * scale; let textH = fontSize * scale;
+                let textH = fontSize * scale;
                 let bboxX = textX;
                 
                 if ((state.textFx.align || 'left') === 'center') { bboxX = textX - (textW / 2); } 
@@ -3563,7 +3670,7 @@
 
                 // --- 6. GAMBAR TEKS ---
                 ctx.translate(-anchorX, -anchorY);
-                let outlineWidth = Math.max(2, fontSize * 0.1);
+                let outlineWidth = Math.max(2, fontSize * 0.1); // Skala otomatis karena fontSize sudah dikali dynamicScale
                 
                 const drawTextPart = (textToDraw, x, y, fillColor) => {
                     ctx.fillStyle = fillColor;
@@ -3648,6 +3755,8 @@
             }
 
             if (state.overlay.lapisan === 'depan' || state.overlay.lapisan === 'kunci') drawOverlayObj();
+            
+            ctx.restore(); // Tutup save/scale dari sistem Resolusi Virtual
         }
 
         let draggingElement = null; let dragStartX = 0; let dragStartY = 0; let initialOffsetX = 0; let initialOffsetY = 0;
@@ -3753,6 +3862,8 @@
             setVal('renderMethodSelect', state.render.method);
             setBtn('renderBitrateModeGroup', state.render.bitrateMode);
             setVal('renderBitrateSelect', state.render.targetBitrate);
+            setVal('renderResolutionSelect', state.render.resolution);
+            setVal('renderFpsSelect', state.render.fps);
 
             document.querySelectorAll('input[type=range]').forEach(slider => {
                 const span = slider.parentElement.querySelector('.val-indicator');
@@ -3806,8 +3917,12 @@
         }
 
         function getCanvasMousePos(evt) {
-            const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;
-            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX; const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            const rect = canvas.getBoundingClientRect(); 
+            // Ubah skala sensor agar selalu memetakan ke resolusi virtual 1280x720
+            const scaleX = 1280 / rect.width; 
+            const scaleY = 720 / rect.height;
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX; 
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
             return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
         }
 
@@ -3851,6 +3966,7 @@
             if (!draggingElement) return;
             if (e.cancelable) e.preventDefault(); 
             const pos = getCanvasMousePos(e); const dx = pos.x - dragStartX; const dy = pos.y - dragStartY;
+            
             if (draggingElement === 'viz') { state.viz.offsetX = initialOffsetX + dx; state.viz.offsetY = initialOffsetY + dy; } 
             else if (draggingElement === 'overlay') { state.overlay.offsetX = initialOffsetX + dx; state.overlay.offsetY = initialOffsetY + dy; } 
             else if (draggingElement === 'text') { state.textFx.offsetX = initialOffsetX + dx; state.textFx.offsetY = initialOffsetY + dy; }
