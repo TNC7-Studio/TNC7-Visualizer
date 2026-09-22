@@ -419,10 +419,10 @@
                 <span class="text-[10px] font-bold text-gray-500 tracking-wider mr-1 uppercase">Kualitas:</span>
                 <select id="renderResolutionSelect" class="custom-select w-16" title="Resolusi Video">
                     <option value="720">720p</option>
-                    <option value="1080">1080p</option>
+                    <option value="1080" selected>1080p</option>
                 </select>
                 <select id="renderFpsSelect" class="custom-select w-[68px] ml-1" title="Frame Rate">
-                    <option value="30">30 FPS</option>
+                    <option value="30" selected>30 FPS</option>
                     <option value="60">60 FPS</option>
                 </select>
             </div>
@@ -438,7 +438,7 @@
                     <option value="1500000">1.5 Mbps</option>
                     <option value="2000000">2.0 Mbps</option>
                     <option value="2500000">2.5 Mbps</option>
-                    <option value="3000000">3.0 Mbps</option>
+                    <option value="3000000" selected>3.0 Mbps</option>
                     <option value="4000000">4.0 Mbps</option>
                     <option value="5000000">5.0 Mbps</option>
                 </select>
@@ -1030,7 +1030,7 @@
             textFx: { enabled: false, customText: '', font: 'Inter', size: 40, color: '#ffffff', colorMode: 'auto', argbSpeed: 15, effect: 'none', intensity: 50, anim: 'none', offsetX: 0, offsetY: 0, align: 'left', animSpeed: 50 },
             timeFx: { enabled: false, format: 'duration', font: "'Share Tech Mono', monospace", size: 30, color: '#ffffff', opacity: 1.0, offsetX: 0, offsetY: 0 },
             playlistFx: { enabled: false, font: 'Calibri', size: 24, spacing: 1.5, letterSpacing: 0, color: '#ffffff', activeColor: '#facc15', offsetX: 0, offsetY: 0, blinkIntensity: 50, blinkMode: 'normal', scaleWidth: 1.0, scaleHeight: 1.0, bold: true, italic: false, transform: 'none', align: 'left', effect: 'normal', fxIntensity: 0.5, icon: 'none', iconColor: '#ef4444', maskEnabled: false, maskDirection: 'left_right', maskOpacity: 0.7, maskColor: '#000000', maskPrecision: 1.0 },
-            render: { bitrateMode: 'variable', targetBitrate: 1500000, method: 'pisah', resolution: 720, fps: 30 }
+            render: { bitrateMode: 'variable', targetBitrate: 3000000, method: 'pisah', resolution: 1080, fps: 30 }
         };
 
         let bboxes = { viz: null, overlay: null, text: null, time: null, playlist: null };
