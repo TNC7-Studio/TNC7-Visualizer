@@ -65,53 +65,46 @@
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: 6px;
+            padding: 6px 8px; 
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
-            overflow: hidden;
+            gap: 2px;
+            flex-grow: 1;
+            justify-content: space-evenly;
+        }
+
+        .sidebar-left .panel {
+            padding: 0;
+            flex-grow: 0;
+            justify-content: flex-start;
         }
 
         .panel-top {
             background-color: #dc2626;
             padding: 6px 10px;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
             user-select: none;
             transition: background-color 0.2s;
         }
 
         .panel-top:hover {
-            background-color: #ef4444;
+            background-color: #b91c1c;
         }
 
-        .panel-title-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .panel-title {
-            font-size: 0.6rem;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+        .panel.collapsed .panel-top {
+            border-radius: 5px;
         }
 
         .chevron-icon {
-            font-size: 0.65rem;
-            color: #ffffff;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .panel:not(.collapsed) .chevron-icon {
             transform: rotate(90deg);
-        }
-
-        .panel.collapsed .panel-content {
-            display: none;
         }
 
         .panel-content {
@@ -119,6 +112,29 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+        }
+
+        .panel.collapsed .panel-content {
+            display: none !important;
+        }
+
+        .panel-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .panel-header {
+            font-size: 0.55rem; 
+            font-weight: 700;
+            color: #ffffff; /* Teks putih agar kontras dengan background merah */
+            background-color: #dc2626; /* Background merah pekat */
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: inline-block;
         }
 
         .btn-custom {
@@ -317,7 +333,16 @@
         }
 
         .playlist-panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            overflow-y: auto;
+            justify-content: flex-start;
         }
         .playlist-item {
             display: flex;
@@ -477,16 +502,17 @@
         <div class="sidebar-left">
             
             <div class="panel">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">BACKGROUND</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">BACKGROUND</span>
                     </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="bgMirrorEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-gray-300 font-bold uppercase">Mirror</span>
+                        <span class="text-[9px] text-white font-bold uppercase">Mirror</span>
                     </label>
                 </div>
+
                 <div class="panel-content">
                     <div class="flex items-center gap-1">
                         <span class="text-[9px] font-bold text-gray-500 w-8">FX</span>
@@ -513,16 +539,17 @@
             </div>
 
             <div class="panel">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">VISUALIZER</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">VISUALIZER</span>
                     </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="vizEnable" checked class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
+                
                 <div class="panel-content">
                     <div class="control-row hidden" id="vizAlignGroup">
                         <button class="btn-custom" data-val="tengah">Tengah</button>
@@ -594,12 +621,13 @@
             </div>
             
             <div class="panel collapsed">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">CUACA</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">CUACA</span>
                     </div>
                 </div>
+                
                 <div class="panel-content">
                     <div class="flex items-center gap-1">
                         <div class="flex flex-wrap gap-1 flex-1" id="bgWeatherGroup">
@@ -627,16 +655,17 @@
             </div>
 
             <div class="panel collapsed">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">TEXT OVERLAY</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">TEXT OVERLAY</span>
                     </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="textEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
+                
                 <div class="panel-content">
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Teks</span>
@@ -735,18 +764,18 @@
                 </div>
             </div>
 
-            <!-- Panel Playlist Overlay -->
             <div class="panel collapsed">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">PLAYLIST OVERLAY</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">PLAYLIST OVERLAY</span>
                     </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="playlistFxEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
+
                 <div class="panel-content">
                     <div class="flex items-center gap-1 mt-1">
                         <span class="text-[9px] font-bold text-gray-500 w-8">FX</span>
@@ -876,18 +905,18 @@
                 </div>
             </div>
 
-            <!-- Panel Waktu/Time -->
             <div class="panel collapsed">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">WAKTU / TIME</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">WAKTU / TIME</span>
                     </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="timeEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
+
                 <div class="panel-content">
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Format</span>
@@ -927,12 +956,13 @@
             </div>
 
             <div class="panel collapsed">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">OVERLAY</span>
+                <div class="panel-top" onclick="togglePanel(this)">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-right text-white text-[10px] chevron-icon"></i>
+                        <span class="font-bold text-[0.6rem] text-white tracking-widest uppercase">OVERLAY</span>
                     </div>
                 </div>
+                
                 <div class="panel-content">
                     <div class="flex items-center gap-1">
                         <input type="file" id="overlayInput" accept="image/*,video/*" class="hidden">
@@ -1019,31 +1049,21 @@
         </div>
 
         <div class="sidebar-right" id="sidebarRight">
-            <div class="panel collapsed playlist-panel" id="playlistPanel">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">PLAYLIST AUDIO</span>
-                    </div>
-                    <span id="playlistCount" class="text-xs font-normal text-gray-300">0 lagu</span>
+            <div class="panel playlist-panel" id="playlistPanel">
+                <div class="panel-header-container">
+                    <span class="panel-header">PLAYLIST AUDIO</span>
+                    <span id="playlistCount" class="text-xs font-normal">0 lagu</span>
                 </div>
-                <div class="panel-content flex-1 overflow-y-auto">
-                    <div id="playlistContainer" class="flex flex-col gap-1">
-                    </div>
+                <div id="playlistContainer" class="flex flex-col gap-1">
                 </div>
             </div>
             
-            <div class="panel collapsed playlist-panel" id="imgPlaylistPanel" style="display: none;">
-                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="panel-title-wrapper">
-                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
-                        <span class="panel-title">PLAYLIST GAMBAR</span>
-                    </div>
-                    <span id="imgPlaylistCount" class="text-xs font-normal text-gray-300">0 gbr</span>
+            <div class="panel playlist-panel" id="imgPlaylistPanel" style="display: none; max-height: 250px;">
+                <div class="panel-header-container">
+                    <span class="panel-header">PLAYLIST GAMBAR</span>
+                    <span id="imgPlaylistCount" class="text-xs font-normal">0 gbr</span>
                 </div>
-                <div class="panel-content flex-1 overflow-y-auto">
-                    <div id="imgPlaylistContainer" class="flex flex-col gap-1 overflow-y-auto pr-1">
-                    </div>
+                <div id="imgPlaylistContainer" class="flex flex-col gap-1 overflow-y-auto pr-1">
                 </div>
             </div>
         </div>
@@ -1052,6 +1072,13 @@
 
     <!-- SCRIPT UTAMA APLIKASI -->
     <script>
+        window.togglePanel = function(headerEl) {
+            const panel = headerEl.closest('.panel');
+            if (panel) {
+                panel.classList.toggle('collapsed');
+            }
+        };
+
         document.addEventListener("DOMContentLoaded", () => {
             const lockScreen = document.getElementById('lock-screen');
             const pinInput = document.getElementById('pin-input');
