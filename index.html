@@ -71,16 +71,12 @@
             overflow: hidden;
         }
 
-        .panel.collapsed {
-            flex: 0 0 auto !important;
-        }
-
         .panel-top {
+            background-color: #dc2626;
+            padding: 6px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #dc2626;
-            padding: 4px 8px;
             cursor: pointer;
             user-select: none;
             transition: background-color 0.2s;
@@ -90,36 +86,39 @@
             background-color: #ef4444;
         }
 
-        .panel-title {
-            font-size: 0.65rem; 
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+        .panel-title-wrapper {
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .panel-icon {
-            transition: transform 0.2s ease;
+        .panel-title {
             font-size: 0.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .panel:not(.collapsed) .panel-icon {
+        .chevron-icon {
+            font-size: 0.65rem;
+            color: #ffffff;
+            transition: transform 0.3s ease;
+        }
+
+        .panel:not(.collapsed) .chevron-icon {
             transform: rotate(90deg);
-        }
-
-        .panel-content {
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background-color: var(--bg-panel);
         }
 
         .panel.collapsed .panel-content {
             display: none;
+        }
+
+        .panel-content {
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .btn-custom {
@@ -318,19 +317,8 @@
         }
 
         .playlist-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            border-radius: 8px;
         }
-        
-        .playlist-panel .panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 12px;
-            justify-content: flex-start;
-        }
-        
         .playlist-item {
             display: flex;
             justify-content: space-between;
@@ -490,10 +478,13 @@
             
             <div class="panel">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> BACKGROUND</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">BACKGROUND</span>
+                    </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="bgMirrorEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-white font-bold uppercase">Mirror</span>
+                        <span class="text-[9px] text-gray-300 font-bold uppercase">Mirror</span>
                     </label>
                 </div>
                 <div class="panel-content">
@@ -523,10 +514,13 @@
 
             <div class="panel">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> VISUALIZER</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">VISUALIZER</span>
+                    </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="vizEnable" checked class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
                 <div class="panel-content">
@@ -567,7 +561,7 @@
                             <div class="flex items-center gap-1 w-full mt-0">
                                 <span class="text-[9px] text-gray-400 w-8" id="vizColorLabel">Speed</span>
                                 <div class="flex-1 flex items-center">
-                                    <input type="range" min="1" max="100" value="15" id="vizArgbSpeedSlider">
+                                    <input type="range" min="1" max="100" value="15" id="vizArgbSpeedSlider" class="">
                                     <input type="color" id="vizColorPicker" value="#facc15" class="hidden w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
                                 </div>
                             </div>
@@ -601,7 +595,10 @@
             
             <div class="panel collapsed">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> CUACA</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">CUACA</span>
+                    </div>
                 </div>
                 <div class="panel-content">
                     <div class="flex items-center gap-1">
@@ -631,30 +628,36 @@
 
             <div class="panel collapsed">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> TEXT OVERLAY</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">TEXT OVERLAY</span>
+                    </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="textEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
                 <div class="panel-content">
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Teks</span>
                         <div class="flex-1">
-                            <input type="text" id="textCustomInput" class="custom-input w-full" placeholder="Otomatis (Nama Lagu)">
+                            <input type="text" id="textCustomInput" class="custom-input" placeholder="Otomatis (Nama Lagu)">
                         </div>
                     </div>
-                    
+
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Font</span>
                         <div class="flex-1">
                             <select class="custom-select" id="textFontSelect">
                                 <option value="Inter">Inter (Modern)</option>
+                                <option value="Montserrat">Montserrat (Elegan)</option>
+                                <option value="Poppins">Poppins (Bulat)</option>
+                                <option value="Oswald">Oswald (Tinggi)</option>
                                 <option value="Bebas Neue">Bebas Neue (Tebal)</option>
-                                <option value="Montserrat">Montserrat</option>
-                                <option value="Poppins">Poppins</option>
-                                <option value="'Share Tech Mono', monospace">Share Tech Mono (Digital)</option>
-                                <option value="'Orbitron', sans-serif">Orbitron (Sci-Fi)</option>
+                                <option value="Righteous">Righteous (Tekno)</option>
+                                <option value="Courier New">Courier (Mono)</option>
+                                <option value="Impact">Impact (Bold)</option>
+                                <option value="Arial">Arial (Basic)</option>
                             </select>
                         </div>
                     </div>
@@ -666,28 +669,35 @@
                                 <button class="btn-custom btn-active" data-val="auto">ARGB</button>
                                 <button class="btn-custom" data-val="statis">Statis</button>
                             </div>
+                            <div class="flex items-center gap-1 w-full mt-0" id="textStaticColorGroup" style="display: none;">
+                                <span class="text-[9px] text-gray-400 w-8">Pilih</span>
+                                <div class="flex-1 flex items-center">
+                                    <input type="color" id="textColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Pilih Warna Statis">
+                                </div>
+                            </div>
                             <div class="flex items-center gap-1 w-full mt-0" id="textArgbSpeedGroup">
                                 <span class="text-[9px] text-gray-400 w-8">Speed</span>
-                                <div class="flex-1"><input type="range" min="1" max="100" value="15" id="textArgbSpeedSlider"></div>
-                            </div>
-                            <div class="flex items-center gap-1 w-full mt-0 hidden" id="textStaticColorGroup" style="display: none;">
-                                <span class="text-[9px] text-gray-400 w-8">Warna</span>
-                                <div class="flex-1"><input type="color" id="textColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent"></div>
+                                <div class="flex-1 flex items-center">
+                                    <input type="range" min="1" max="100" value="15" id="textArgbSpeedSlider">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="control-row mt-1">
-                        <span class="control-label text-[9px] w-10 font-bold tracking-wider uppercase">Ukr</span>
-                        <div class="flex-1"><input type="range" id="textSizeSlider" min="10" max="150" value="40"></div>
-                        <div class="flex items-center gap-1 ml-1" id="textAlignGroup">
-                            <button class="btn-custom w-5 h-5 p-0 btn-active" data-val="left"><i class="fa-solid fa-align-left text-[9px]"></i></button>
-                            <button class="btn-custom w-5 h-5 p-0" data-val="center"><i class="fa-solid fa-align-center text-[9px]"></i></button>
-                            <button class="btn-custom w-5 h-5 p-0" data-val="right"><i class="fa-solid fa-align-right text-[9px]"></i></button>
+                    <div class="flex items-center text-[9px] justify-between w-full mt-1 border border-[#2a3142] rounded p-1">
+                        <div class="flex items-center gap-1 flex-1 pr-1">
+                            <span class="text-[9px] font-bold text-gray-500 w-8 tracking-wider uppercase">Ukr</span>
+                            <input type="range" id="textSizeSlider" min="10" max="200" value="40" class="flex-1">
+                        </div>
+                        <div class="w-px h-4 bg-gray-600 mx-1"></div>
+                        <div class="flex items-center gap-1" id="textAlignGroup">
+                            <button class="btn-custom w-5 h-5 p-0 btn-active" data-val="left" title="Rata Kiri"><i class="fa-solid fa-align-left text-[9px]"></i></button>
+                            <button class="btn-custom w-5 h-5 p-0" data-val="center" title="Rata Tengah"><i class="fa-solid fa-align-center text-[9px]"></i></button>
+                            <button class="btn-custom w-5 h-5 p-0" data-val="right" title="Rata Kanan"><i class="fa-solid fa-align-right text-[9px]"></i></button>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-1 mt-1">
+                    <div class="flex items-start gap-1 mt-1">
                         <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Efek</span>
                         <div class="flex flex-wrap gap-1 flex-1" id="textEffectGroup">
                             <button class="btn-custom btn-active" data-val="none">Normal</button>
@@ -696,13 +706,15 @@
                             <button class="btn-custom" data-val="outline">Outline</button>
                         </div>
                     </div>
-                    
+
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Level</span>
-                        <div class="flex-1"><input type="range" id="textIntensitySlider" min="1" max="100" value="50"></div>
+                        <div class="flex-1">
+                            <input type="range" id="textIntensitySlider" min="1" max="100" value="50">
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-1 mt-1">
+                    <div class="flex items-start gap-1 mt-1">
                         <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Anim</span>
                         <div class="flex flex-wrap gap-1 flex-1" id="textAnimGroup">
                             <button class="btn-custom btn-active" data-val="none">Diam</button>
@@ -713,20 +725,26 @@
                             <button class="btn-custom" data-val="typewriter">Ketik</button>
                         </div>
                     </div>
-                    
+
                     <div class="control-row mt-0">
-                        <span class="control-label text-[9px] w-10 uppercase">Cepat</span>
-                        <div class="flex-1"><input type="range" id="textAnimSpeedSlider" min="1" max="200" value="50"></div>
+                        <span class="control-label text-[9px] w-10">Cepat</span>
+                        <div class="flex-1">
+                            <input type="range" id="textAnimSpeedSlider" min="1" max="200" value="50">
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Panel Playlist Overlay -->
             <div class="panel collapsed">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> PLAYLIST OVERLAY</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">PLAYLIST OVERLAY</span>
+                    </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="playlistFxEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
                 <div class="panel-content">
@@ -740,89 +758,134 @@
                         </div>
                     </div>
                     
-                    <div class="control-row">
-                        <span class="control-label text-[9px] w-10">Intensit...</span>
-                        <div class="flex-1">
-                            <input type="range" id="playlistFxIntensitySlider" min="1" max="100" value="50">
-                        </div>
+                    <div class="control-row mt-0">
+                        <span class="control-label text-[9px] w-10 truncate">Intensitas</span>
+                        <div class="flex-1"><input type="range" id="playlistFxIntensitySlider" min="0" max="100" value="50"></div>
                     </div>
-                    
+
                     <div class="control-row">
                         <span class="control-label text-[9px] w-10">Font</span>
                         <div class="flex-1">
                             <select class="custom-select" id="playlistFontSelect">
                                 <option value="Calibri">Calibri</option>
-                                <option value="Inter">Inter</option>
-                                <option value="Bebas Neue">Bebas Neue</option>
-                                <option value="Montserrat">Montserrat</option>
-                                <option value="Poppins">Poppins</option>
+                                <option value="Arial">Arial</option>
+                                <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                                <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                                <option value="'Century Gothic', sans-serif">Century Gothic</option>
+                                <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                                <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="flex items-center text-[9px] justify-between w-full border border-[#2a3142] rounded p-1 mt-1">
+                    
+                    <div class="flex items-center justify-between w-full mt-1 border border-[#2a3142] rounded px-1 py-1">
                         <div class="flex items-center gap-1">
-                            <button class="btn-custom font-bold w-5 h-5 p-0" id="btnPlaylistBold">B</button>
-                            <button class="btn-custom italic font-serif w-5 h-5 p-0" id="btnPlaylistItalic">I</button>
+                            <button class="btn-custom w-6 h-6 p-0 btn-active font-bold" id="btnPlaylistBold" title="Tebal (Bold)">B</button>
+                            <button class="btn-custom w-6 h-6 p-0 italic font-serif" id="btnPlaylistItalic" title="Miring (Italic)">I</button>
                         </div>
                         <div class="w-px h-4 bg-gray-600 mx-1"></div>
-                        <div class="flex items-center gap-1" id="playlistAlignGroup">
-                            <button class="btn-custom w-5 h-5 p-0 btn-active" data-val="left"><i class="fa-solid fa-align-left text-[9px]"></i></button>
-                            <button class="btn-custom w-5 h-5 p-0" data-val="center"><i class="fa-solid fa-align-center text-[9px]"></i></button>
-                            <button class="btn-custom w-5 h-5 p-0" data-val="right"><i class="fa-solid fa-align-right text-[9px]"></i></button>
+                        <div class="flex items-center gap-1 flex-1 justify-center" id="playlistAlignGroup">
+                            <button class="btn-custom w-6 h-6 p-0 btn-active" data-val="left" title="Rata Kiri"><i class="fa-solid fa-align-left text-[10px]"></i></button>
+                            <button class="btn-custom w-6 h-6 p-0" data-val="center" title="Rata Tengah"><i class="fa-solid fa-align-center text-[10px]"></i></button>
+                            <button class="btn-custom w-6 h-6 p-0" data-val="right" title="Rata Kanan"><i class="fa-solid fa-align-right text-[10px]"></i></button>
                         </div>
                         <div class="w-px h-4 bg-gray-600 mx-1"></div>
                         <div class="flex items-center gap-1" id="playlistTransformGroup">
-                            <button class="btn-custom w-6 h-5 p-0 text-[10px]" data-val="uppercase">AA</button>
-                            <button class="btn-custom w-6 h-5 p-0 text-[10px] btn-active" data-val="none">Aa</button>
+                            <button class="btn-custom w-6 h-6 p-0 text-[10px]" data-val="uppercase" title="Kapital Semua (Uppercase)">AA</button>
+                            <button class="btn-custom w-6 h-6 p-0 text-[10px] btn-active" data-val="none" title="Normal (Asli)">Aa</button>
                         </div>
                     </div>
 
                     <div class="control-row mt-1">
-                        <span class="control-label text-[9px] w-10">UKR</span>
+                        <span class="control-label text-[9px] w-10 font-bold tracking-wider uppercase">Ukr</span>
+                        <div class="flex-1"><input type="range" id="playlistSizeSlider" min="10" max="80" value="24"></div>
+                    </div>
+
+                    <div class="control-row mt-1">
+                        <span class="control-label text-[9px] w-8 font-bold tracking-wider uppercase" title="Skala Lebar Huruf">S.Lbr</span>
+                        <div class="flex-1"><input type="range" id="playlistScaleWidthSlider" min="10" max="300" value="100"></div>
+                        <span class="control-label text-[9px] w-8 font-bold tracking-wider uppercase ml-1" title="Skala Tinggi Huruf">S.Tgi</span>
+                        <div class="flex-1"><input type="range" id="playlistScaleHeightSlider" min="10" max="300" value="100"></div>
+                    </div>
+
+                    <div class="flex items-center gap-1 mt-1 w-full">
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">Normal</span>
                         <div class="flex-1">
-                            <input type="range" id="playlistSizeSlider" min="10" max="100" value="24">
+                            <input type="color" id="playlistColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent">
+                        </div>
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase ml-1">Aktif</span>
+                        <div class="flex-1">
+                            <input type="color" id="playlistActiveColorPicker" value="#facc15" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent">
                         </div>
                     </div>
-                    
-                    <div class="control-row mt-1">
-                        <span class="control-label text-[9px] w-8 font-bold tracking-wider uppercase">S.LBR</span>
-                        <div class="flex-1"><input type="range" id="playlistScaleWidthSlider" min="50" max="200" value="100"></div>
-                        <span class="control-label text-[9px] w-8 font-bold tracking-wider uppercase ml-1">S.TGI</span>
-                        <div class="flex-1"><input type="range" id="playlistScaleHeightSlider" min="50" max="200" value="100"></div>
+
+                    <div class="flex items-start gap-1 mt-1">
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider uppercase">M.Kedip</span>
+                        <div class="flex flex-wrap gap-1 flex-1" id="playlistBlinkModeGroup">
+                            <button class="btn-custom btn-active" data-val="normal">Normal</button>
+                            <button class="btn-custom" data-val="fade">Lembut</button>
+                            <button class="btn-custom" data-val="hard">Patah</button>
+                            <button class="btn-custom" data-val="typewriter">Ketik</button>
+                        </div>
                     </div>
-                    
-                    <div class="control-row mt-1">
-                        <span class="control-label text-[9px] w-10">NORMAL</span>
-                        <div class="flex-1"><input type="color" id="playlistColorPicker" value="#ffffff" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent"></div>
-                        <span class="control-label text-[9px] w-10 ml-2">AKTIF</span>
-                        <div class="flex-1"><input type="color" id="playlistActiveColorPicker" value="#facc15" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent"></div>
+
+                    <div class="control-row">
+                        <span class="control-label text-[9px] w-10">Ikon</span>
+                        <div class="flex-1 flex gap-1">
+                            <select class="custom-select flex-1" id="playlistIconSelect">
+                                <option value="none">Tanpa Ikon</option>
+                                <option value="play_solid">▶ Solid Play</option>
+                                <option value="play_outline">▷ Outline Play</option>
+                                <option value="music">♫ Nada Musik</option>
+                                <option value="wave">ılılı Gelombang</option>
+                                <option value="arrow">➔ Panah</option>
+                                <option value="dot">● Titik Modern</option>
+                            </select>
+                            <input type="color" id="playlistIconColorPicker" value="#ef4444" class="w-6 h-4 rounded cursor-pointer border-0 p-0 bg-transparent" title="Warna Ikon">
+                        </div>
                     </div>
-                    
-                    <div class="flex items-center gap-1 mt-1">
-                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider">MASK</span>
-                        <label class="flex items-center gap-1 cursor-pointer">
+
+                    <div class="control-row mt-1">
+                        <span class="control-label text-[9px] w-10 font-bold tracking-wider uppercase" title="Kecepatan kedipan lagu yang sedang diputar">Level</span>
+                        <div class="flex-1"><input type="range" id="playlistBlinkSlider" min="0" max="100" value="50"></div>
+                    </div>
+
+                    <!-- Bagian Kontrol Masking Background Playlist -->
+                    <div class="flex items-center gap-1 mt-1 border-t border-[#2a3142] pt-1">
+                        <label class="flex items-center gap-1 cursor-pointer w-14 text-[9px] font-bold text-gray-500 uppercase tracking-wider">
                             <input type="checkbox" id="playlistMaskEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
+                            Mask
                         </label>
                         <select class="custom-select flex-1" id="playlistMaskDirectionSelect">
-                            <option value="left_right">Kiri ke Kanan</option>
-                            <option value="right_left">Kanan ke Kiri</option>
-                            <option value="solid">Solid Kotak</option>
+                            <option value="left_right">Kiri &rarr; Kanan</option>
+                            <option value="right_left">Kanan &rarr; Kiri</option>
+                            <option value="top_bottom">Atas &darr; Bawah</option>
+                            <option value="solid">Blok Solid</option>
                         </select>
                     </div>
-                    <div class="control-row">
-                        <span class="control-label text-[9px] w-10 uppercase">Area</span>
+                    <div class="control-row mt-1">
+                        <span class="control-label text-[9px] w-8 font-bold uppercase" title="Warna Masking">Wrn</span>
+                        <div class="flex-1"><input type="color" id="playlistMaskColorPicker" value="#000000" class="w-full h-4 rounded cursor-pointer border-0 p-0 bg-transparent"></div>
+                        <span class="control-label text-[9px] w-8 font-bold uppercase ml-1" title="Opacity">Opc</span>
+                        <div class="flex-1"><input type="range" id="playlistMaskOpacitySlider" min="0" max="100" value="70"></div>
+                    </div>
+                    <div class="control-row mt-1">
+                        <span class="control-label text-[9px] w-10 font-bold uppercase" title="Area/Presisi Masking">Area</span>
                         <div class="flex-1"><input type="range" id="playlistMaskPrecisionSlider" min="10" max="200" value="100"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Panel Waktu/Time -->
             <div class="panel collapsed">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> WAKTU / TIME</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">WAKTU / TIME</span>
+                    </div>
                     <label class="flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation()">
                         <input type="checkbox" id="timeEnable" class="rounded border-gray-600 bg-gray-700 text-yellow-400 focus:ring-yellow-400 h-2 w-2">
-                        <span class="text-[9px] text-white font-bold uppercase">Tampilkan</span>
+                        <span class="text-[9px] text-gray-300 font-bold uppercase">Tampilkan</span>
                     </label>
                 </div>
                 <div class="panel-content">
@@ -865,7 +928,10 @@
 
             <div class="panel collapsed">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> OVERLAY</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">OVERLAY</span>
+                    </div>
                 </div>
                 <div class="panel-content">
                     <div class="flex items-center gap-1">
@@ -891,66 +957,97 @@
                         <span class="control-label text-[9px] w-8 font-bold ml-1">Opc</span>
                         <div class="flex-1"><input type="range" id="overlayOpacity" min="0" max="100" value="100"></div>
                     </div>
+                    <div class="control-row mt-1">
+                        <span class="control-label text-[9px] w-8 font-bold">Spd</span>
+                        <div class="flex-1"><input type="range" id="overlaySpeed" min="1" max="100" value="50"></div>
+                    </div>
+                    
+                    <div class="flex items-start gap-1 mt-1">
+                        <span class="text-[9px] font-bold text-gray-500 w-10 tracking-wider">ANIM</span>
+                        <div class="flex flex-wrap gap-1 flex-1" id="overlayAnimGroup">
+                            <button class="btn-custom btn-active" data-val="none">Tanpa anim</button>
+                            <button class="btn-custom" data-val="pan">Pan</button>
+                            <button class="btn-custom" data-val="denyut">Denyut</button>
+                            <button class="btn-custom" data-val="float">Float</button>
+                            <button class="btn-custom" data-val="shake">Shake</button>
+                            <button class="btn-custom" data-val="zoom">Zoom</button>
+                            <button class="btn-custom" data-val="putar_kanan">Putar &rarr;</button>
+                            <button class="btn-custom" data-val="putar_kiri">Putar &larr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="main-content">
+            <div class="preview-container" id="canvas-wrapper">
+                <div id="recording-indicator" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0f1115]/90 backdrop-blur-md text-white px-8 py-6 rounded-2xl z-50 shadow-[0_10px_40px_rgba(0,0,0,0.8),0_0_30px_rgba(239,68,68,0.2)] border border-gray-700 flex flex-col gap-2 items-center min-w-[340px] transform transition-all">
+                    <div class="relative flex items-center justify-center w-12 h-12 mb-2">
+                        <div class="absolute w-full h-full border-4 border-gray-600 border-t-red-500 rounded-full animate-spin"></div>
+                        <div class="absolute w-6 h-6 bg-red-500/30 rounded-full animate-ping"></div>
+                        <i class="fa-solid fa-compact-disc text-red-500 animate-pulse text-sm"></i>
+                    </div>
+                    <span id="recording-status" class="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-yellow-400 drop-shadow-sm uppercase text-center">SIAP...</span>
+                    <div class="bg-gray-800/60 rounded-lg px-4 py-2 mt-2 border border-gray-700/50 w-full text-center shadow-inner">
+                        <span id="recording-playlist-status" class="text-[11px] text-gray-300 font-medium tracking-wide"></span>
+                    </div>
+                </div>
+                <div id="no-audio-text" class="absolute text-gray-500 font-medium z-10">Belum ada audio</div>
+                <!-- Canvas Element -->
+                <canvas id="previewCanvas"></canvas>
+            </div>
+
+            <div class="player-wrapper">
+                <div class="player-bar">
+                    <div id="playPauseBtn" class="play-btn-circle">
+                        <i class="fa-solid fa-play ml-1"></i>
+                    </div>
+                    <div class="flex-1 flex flex-col gap-1 w-full overflow-hidden">
+                        <div class="flex justify-between text-xs text-gray-400">
+                            <span id="player-title" class="hidden">Belum ada audio</span>
+                            <span id="track-name-display" class="font-medium truncate flex-1 mr-4 text-white">Belum ada audio</span>
+                            <span id="time-display" class="whitespace-nowrap">00:00 / 00:00</span>
+                        </div>
+                        <div id="progress-container" class="h-2 bg-[#2a3142] rounded-full cursor-pointer relative mt-1">
+                            <div id="progress-bar" class="h-full bg-[#facc15] rounded-full w-0 pointer-events-none"></div>
+                            <div id="progress-handle" class="w-3 h-3 bg-white rounded-full absolute top-1/2 -translate-y-1/2 -ml-1.5 left-0 pointer-events-none shadow-md"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-right" id="sidebarRight">
+            <div class="panel collapsed playlist-panel" id="playlistPanel">
+                <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">PLAYLIST AUDIO</span>
+                    </div>
+                    <span id="playlistCount" class="text-xs font-normal text-gray-300">0 lagu</span>
+                </div>
+                <div class="panel-content flex-1 overflow-y-auto">
+                    <div id="playlistContainer" class="flex flex-col gap-1">
+                    </div>
                 </div>
             </div>
             
-            <div class="panel playlist-panel collapsed" id="imgPlaylistPanel" style="display: none; max-height: 250px;">
+            <div class="panel collapsed playlist-panel" id="imgPlaylistPanel" style="display: none;">
                 <div class="panel-top" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <span class="panel-title"><i class="fa-solid fa-chevron-right panel-icon"></i> PLAYLIST GAMBAR</span>
-                    <span id="imgPlaylistCount" class="text-xs font-normal text-white">0 gbr</span>
+                    <div class="panel-title-wrapper">
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        <span class="panel-title">PLAYLIST GAMBAR</span>
+                    </div>
+                    <span id="imgPlaylistCount" class="text-xs font-normal text-gray-300">0 gbr</span>
                 </div>
-                <div class="panel-content" style="padding-right: 4px;">
+                <div class="panel-content flex-1 overflow-y-auto">
                     <div id="imgPlaylistContainer" class="flex flex-col gap-1 overflow-y-auto pr-1">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="main-content" id="canvas-wrapper">
-            <div class="preview-container">
-                <canvas id="previewCanvas"></canvas>
-                <div id="recording-indicator" class="hidden absolute top-4 right-4 bg-red-600/90 text-white px-3 py-1.5 rounded flex items-center gap-2 shadow-lg z-10 backdrop-blur-sm">
-                    <div class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></div>
-                    <div class="flex flex-col">
-                        <span class="text-xs font-bold tracking-wider" id="recording-status">Merekam...</span>
-                        <span class="text-[9px] text-red-200" id="recording-playlist-status">Lagu 1/1</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="player-wrapper">
-                <div class="player-bar">
-                    <div class="play-btn-circle" id="playPauseBtn">
-                        <i class="fa-solid fa-play ml-1"></i>
-                    </div>
-                    <div class="flex flex-col flex-1 gap-1">
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-xs font-bold truncate max-w-[300px] text-white" id="player-title">Belum ada audio</span>
-                            <span class="text-[10px] text-gray-400 font-medium" id="time-display">00:00 / 00:00</span>
-                        </div>
-                        <div class="relative w-full h-2 bg-gray-700 rounded cursor-pointer" id="progress-container">
-                            <div class="absolute top-0 left-0 h-full bg-yellow-400 rounded pointer-events-none" id="progress-bar" style="width: 0%"></div>
-                            <div class="absolute top-1/2 -mt-1.5 -ml-1.5 w-3 h-3 bg-white rounded-full shadow cursor-pointer pointer-events-none" id="progress-handle" style="left: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar-right" id="sidebarRight" style="display: none;">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-2">
-                <span class="text-xs font-bold text-gray-300">DAFTAR LAGU</span>
-                <span class="text-[10px] bg-gray-700 px-2 py-0.5 rounded text-gray-300" id="playlistCount">0 lagu</span>
-            </div>
-            <div class="flex-1 overflow-y-auto" id="playlistPanel">
-                <div id="no-audio-text" class="text-center text-gray-500 text-xs mt-10">
-                    <i class="fa-solid fa-music text-2xl mb-2 opacity-50 block"></i>
-                    Tarik lagu ke sini<br>atau klik tombol + Audio
-                </div>
-                <div id="playlistContainer" class="flex flex-col gap-1"></div>
-            </div>
-            <div id="track-name-display" class="hidden"></div>
-        </div>
     </div>
 
     <!-- SCRIPT UTAMA APLIKASI -->
@@ -1166,11 +1263,11 @@
                 btn.addEventListener('click', () => {
                     const mode = btn.getAttribute('data-val');
                     if (mode === 'auto') {
-                        if(textStaticColorGroup) textStaticColorGroup.style.display = 'none';
-                        if(textArgbSpeedGroup) textArgbSpeedGroup.style.display = 'flex';
+                        textStaticColorGroup.style.display = 'none';
+                        textArgbSpeedGroup.style.display = 'flex';
                     } else if (mode === 'statis') {
-                        if(textStaticColorGroup) textStaticColorGroup.style.display = 'flex';
-                        if(textArgbSpeedGroup) textArgbSpeedGroup.style.display = 'none';
+                        textStaticColorGroup.style.display = 'flex';
+                        textArgbSpeedGroup.style.display = 'none';
                     }
                 });
             });
@@ -1230,7 +1327,7 @@
         
         document.getElementById('playlistColorPicker').addEventListener('input', (e) => { state.playlistFx.color = e.target.value; });
         document.getElementById('playlistActiveColorPicker').addEventListener('input', (e) => { state.playlistFx.activeColor = e.target.value; });
-        document.getElementById('playlistBlinkSlider')?.addEventListener('input', (e) => { state.playlistFx.blinkIntensity = parseInt(e.target.value); });
+        document.getElementById('playlistBlinkSlider').addEventListener('input', (e) => { state.playlistFx.blinkIntensity = parseInt(e.target.value); });
         
         const playlistIconSelect = document.getElementById('playlistIconSelect');
         if (playlistIconSelect) {
@@ -1257,7 +1354,7 @@
             }
         });
         document.getElementById('playlistMaskDirectionSelect').addEventListener('change', (e) => { state.playlistFx.maskDirection = e.target.value; });
-        document.getElementById('playlistMaskOpacitySlider')?.addEventListener('input', (e) => { state.playlistFx.maskOpacity = e.target.value / 100; });
+        document.getElementById('playlistMaskOpacitySlider').addEventListener('input', (e) => { state.playlistFx.maskOpacity = e.target.value / 100; });
         document.getElementById('playlistMaskPrecisionSlider').addEventListener('input', (e) => { state.playlistFx.maskPrecision = e.target.value / 100; });
         const playlistMaskColorPicker = document.getElementById('playlistMaskColorPicker');
         if (playlistMaskColorPicker) {
@@ -1271,7 +1368,7 @@
         
         document.getElementById('overlaySize').addEventListener('input', (e) => { state.overlay.size = e.target.value / 100; });
         document.getElementById('overlayOpacity').addEventListener('input', (e) => { state.overlay.opacity = e.target.value / 100; });
-        document.getElementById('overlaySpeed')?.addEventListener('input', (e) => { state.overlay.speed = e.target.value / 100; });
+        document.getElementById('overlaySpeed').addEventListener('input', (e) => { state.overlay.speed = e.target.value / 100; });
 
         document.getElementById('overlayInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -1305,13 +1402,9 @@
             vizColorModeGroup.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (state.viz.colorMode === 'auto') {
-                        if (vizColorLabel) vizColorLabel.textContent = 'Speed'; 
-                        if (vizArgbSpeedSlider) vizArgbSpeedSlider.classList.remove('hidden'); 
-                        if (vizColorPicker) vizColorPicker.classList.add('hidden');
+                        vizColorLabel.textContent = 'Speed'; vizArgbSpeedSlider.classList.remove('hidden'); vizColorPicker.classList.add('hidden');
                     } else {
-                        if (vizColorLabel) vizColorLabel.textContent = 'Warna'; 
-                        if (vizArgbSpeedSlider) vizArgbSpeedSlider.classList.add('hidden'); 
-                        if (vizColorPicker) vizColorPicker.classList.remove('hidden');
+                        vizColorLabel.textContent = 'Warna'; vizArgbSpeedSlider.classList.add('hidden'); vizColorPicker.classList.remove('hidden');
                     }
                 });
             });
@@ -1776,67 +1869,63 @@
         }
 
         const playlistPanelDOM = document.getElementById('playlistPanel');
-        if (playlistPanelDOM) {
-            playlistPanelDOM.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                playlistPanelDOM.classList.add('drag-over');
-            });
-            playlistPanelDOM.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                playlistPanelDOM.classList.remove('drag-over');
-            });
-            playlistPanelDOM.addEventListener('drop', (e) => {
-                e.preventDefault();
-                playlistPanelDOM.classList.remove('drag-over');
-                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/'));
-                if (files.length === 0) return;
-                files.forEach(file => playlist.push({ file: file }));
-                if (currentTrackIndex === -1 && playlist.length > 0) loadTrack(0); else renderPlaylist();
-                showNotification(`${files.length} audio ditambahkan`);
-            });
-        }
+        playlistPanelDOM.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            playlistPanelDOM.classList.add('drag-over');
+        });
+        playlistPanelDOM.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            playlistPanelDOM.classList.remove('drag-over');
+        });
+        playlistPanelDOM.addEventListener('drop', (e) => {
+            e.preventDefault();
+            playlistPanelDOM.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/'));
+            if (files.length === 0) return;
+            files.forEach(file => playlist.push({ file: file }));
+            if (currentTrackIndex === -1 && playlist.length > 0) loadTrack(0); else renderPlaylist();
+            showNotification(`${files.length} audio ditambahkan`);
+        });
 
         const canvasWrapperDOM = document.getElementById('canvas-wrapper');
-        if (canvasWrapperDOM) {
-            canvasWrapperDOM.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                canvasWrapperDOM.classList.add('drag-over');
-            });
-            canvasWrapperDOM.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                canvasWrapperDOM.classList.remove('drag-over');
-            });
-            canvasWrapperDOM.addEventListener('drop', (e) => {
-                e.preventDefault();
-                canvasWrapperDOM.classList.remove('drag-over');
+        canvasWrapperDOM.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            canvasWrapperDOM.classList.add('drag-over');
+        });
+        canvasWrapperDOM.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            canvasWrapperDOM.classList.remove('drag-over');
+        });
+        canvasWrapperDOM.addEventListener('drop', (e) => {
+            e.preventDefault();
+            canvasWrapperDOM.classList.remove('drag-over');
+            
+            const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            
+            if (imageFiles.length > 0) {
+                const wasEmpty = imagePlaylist.length === 0;
                 
-                const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                
-                if (imageFiles.length > 0) {
-                    const wasEmpty = imagePlaylist.length === 0;
-                    
-                    imageFiles.forEach(file => {
-                        const url = URL.createObjectURL(file);
-                        imagePlaylist.push({ file: file, url: url });
-                    });
+                imageFiles.forEach(file => {
+                    const url = URL.createObjectURL(file);
+                    imagePlaylist.push({ file: file, url: url });
+                });
 
-                    isImagePlaylistActive = true;
-                    document.getElementById('imgPlaylistPanel').style.display = 'flex';
-                    
-                    if (wasEmpty || currentImageIndex === -1) {
-                        if (currentTrackIndex >= 0) {
-                            currentImageIndex = currentTrackIndex % imagePlaylist.length;
-                        } else {
-                            currentImageIndex = 0;
-                        }
-                        loadBgImageFromPlaylist(currentImageIndex);
+                isImagePlaylistActive = true;
+                document.getElementById('imgPlaylistPanel').style.display = 'flex';
+                
+                if (wasEmpty || currentImageIndex === -1) {
+                    if (currentTrackIndex >= 0) {
+                        currentImageIndex = currentTrackIndex % imagePlaylist.length;
+                    } else {
+                        currentImageIndex = 0;
                     }
-                    
-                    renderImagePlaylistUI();
-                    showNotification(`${imageFiles.length} gambar ditambahkan ke playlist`);
+                    loadBgImageFromPlaylist(currentImageIndex);
                 }
-            });
-        }
+                
+                renderImagePlaylistUI();
+                showNotification(`${imageFiles.length} gambar ditambahkan ke playlist`);
+            }
+        });
 
         const playBtn = document.getElementById('playPauseBtn');
         const timeDisplay = document.getElementById('time-display');
@@ -3846,29 +3935,21 @@
             });
             
             if (state.textFx.colorMode === 'auto') {
-                const tStatic = document.getElementById('textStaticColorGroup');
-                const tArgb = document.getElementById('textArgbSpeedGroup');
-                if (tStatic) tStatic.style.display = 'none';
-                if (tArgb) tArgb.style.display = 'flex';
+                document.getElementById('textStaticColorGroup').style.display = 'none';
+                document.getElementById('textArgbSpeedGroup').style.display = 'flex';
             } else {
-                const tStatic = document.getElementById('textStaticColorGroup');
-                const tArgb = document.getElementById('textArgbSpeedGroup');
-                if (tStatic) tStatic.style.display = 'flex';
-                if (tArgb) tArgb.style.display = 'none';
+                document.getElementById('textStaticColorGroup').style.display = 'flex';
+                document.getElementById('textArgbSpeedGroup').style.display = 'none';
             }
 
-            const vLabel = document.getElementById('vizColorLabel');
-            const vArgb = document.getElementById('vizArgbSpeedSlider');
-            const vPick = document.getElementById('vizColorPicker');
-            
             if (state.viz.colorMode === 'auto') {
-                if (vLabel) vLabel.textContent = 'Speed'; 
-                if (vArgb) vArgb.classList.remove('hidden'); 
-                if (vPick) vPick.classList.add('hidden');
+                document.getElementById('vizColorLabel').textContent = 'Speed'; 
+                document.getElementById('vizArgbSpeedSlider').classList.remove('hidden'); 
+                document.getElementById('vizColorPicker').classList.add('hidden');
             } else {
-                if (vLabel) vLabel.textContent = 'Warna'; 
-                if (vArgb) vArgb.classList.add('hidden'); 
-                if (vPick) vPick.classList.remove('hidden');
+                document.getElementById('vizColorLabel').textContent = 'Warna'; 
+                document.getElementById('vizArgbSpeedSlider').classList.add('hidden'); 
+                document.getElementById('vizColorPicker').classList.remove('hidden');
             }
         }
 
